@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis Legacy AI - Revolutionary Multi-Agent AI Platform</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Genesis Legacy AI - The future of intelligent automation with our revolutionary multi-agent AI platform. Voice-enabled AI assistants that transform your business operations.">
+    <meta name="keywords" content="AI, artificial intelligence, agents, voice AI, automation, Genesis Legacy AI, multi-agent system, business AI, smart assistants">
+    <meta name="author" content="Genesis Legacy AI">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://genesislegacyai.com/">
+    <meta property="og:title" content="Genesis Legacy AI - Revolutionary Multi-Agent AI Platform">
+    <meta property="og:description" content="Transform your business with intelligent AI agents. Voice-enabled, collaborative, and production-ready.">
+    <meta property="og:image" content="https://genesislegacyai.com/images/genesis-og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://genesislegacyai.com/">
+    <meta property="twitter:title" content="Genesis Legacy AI - Revolutionary Multi-Agent AI Platform">
+    <meta property="twitter:description" content="Transform your business with intelligent AI agents. Voice-enabled, collaborative, and production-ready.">
+    <meta property="twitter:image" content="https://genesislegacyai.com/images/genesis-twitter-card.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Genesis Legacy AI",
+      "url": "https://genesislegacyai.com",
+      "description": "Revolutionary multi-agent AI platform for business automation",
+      "foundingDate": "2024",
+      "industry": "Artificial Intelligence",
+      "employee": {
+        "@type": "Person",
+        "name": "Tyler Mason",
+        "jobTitle": "CEO"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Fischer",
+        "addressRegion": "TX",
+        "addressCountry": "US"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-830-381-8768",
+        "contactType": "customer service",
+        "email": "tyler@buildingwithar.com"
+      }
+    }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: #0a0a0f;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Performance optimized animations */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(78, 144, 226, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            z-index: -2;
+            will-change: opacity;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+        
+        /* Header */
+        .header { 
+            background: linear-gradient(135deg, rgba(27, 58, 92, 0.8), rgba(46, 117, 182, 0.6));
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #10b981, #4a90e2, #3b82f6);
+            border-radius: 20px;
+            z-index: -1;
+            animation: borderGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.8; }
+        }
+        
+        .header-content { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .logo-section { display: flex; align-items: center; gap: 20px; }
+        .logo { 
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #1B3A5C, #2E75B6, #4A90E2);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(transparent, rgba(59, 130, 246, 0.3), transparent);
+            animation: logoSpin 4s linear infinite;
+        }
+        
+        @keyframes logoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .logo-text {
+            position: relative;
+            z-index: 1;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            background: linear-gradient(45deg, #10B981, #3B82F6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .title-section h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #10B981, #3B82F6, #4A90E2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+        
+        .title-section p {
+            color: #94A3B8;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        
+        .status-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10B981;
+            border-radius: 25px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .timestamp {
+            color: #64748B;
+            font-size: 0.9rem;
+        }
+        
+        /* Main Content */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .command-console {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .console-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .console-header h2 {
+            font-family: 'Orbitron', monospace;
+            color: #3B82F6;
+            font-size: 1.4rem;
+        }
+        
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .agent-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .agent-card:hover {
+            border-color: #3B82F6;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, #10B981, #3B82F6);
+        }
+        
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .agent-avatar {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #1E40AF, #3B82F6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .agent-info h3 {
+            font-family: 'Orbitron', monospace;
+            color: #E2E8F0;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .agent-role {
+            color: #64748B;
+            font-size: 0.9rem;
+        }
+        
+        .agent-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .voice-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #10B981;
+        }
+        
+        .voice-wave {
+            width: 4px;
+            height: 16px;
+            background: #10B981;
+            border-radius: 2px;
+            animation: voiceWave 1.5s ease-in-out infinite;
+        }
+        
+        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes voiceWave {
+            0%, 100% { height: 16px; opacity: 0.3; }
+            50% { height: 24px; opacity: 1; }
+        }
+        
+        .stats-panel {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            height: fit-content;
+        }
+        
+        .stats-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .stats-header h2 {
+            font-family: 'Orbitron', monospace;
+            color: #3B82F6;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .live-indicator {
+            color: #10B981;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #94A3B8;
+            font-size: 0.9rem;
+        }
+        
+        .metric-value {
+            color: #E2E8F0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .metric-value.success {
+            color: #10B981;
+        }
+        
+        .metric-value.warning {
+            color: #F59E0B;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(
+                transparent,
+                rgba(59, 130, 246, 0.1),
+                transparent,
+                rgba(16, 185, 129, 0.1),
+                transparent
+            );
+            animation: ctaRotate 8s linear infinite;
+            z-index: 0;
+        }
+        
+        @keyframes ctaRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-content h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #10B981, #3B82F6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cta-content p {
+            color: #94A3B8;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .cta-button.primary {
+            background: linear-gradient(135deg, #1E40AF, #3B82F6);
+            color: white;
+        }
+        
+        .cta-button.primary:hover {
+            background: linear-gradient(135deg, #1D4ED8, #2563EB);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            color: #3B82F6;
+            border: 2px solid #3B82F6;
+        }
+        
+        .cta-button.secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            text-align: center;
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .footer p {
+            color: #64748B;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .title-section h1 {
+                font-size: 2rem;
+            }
+            
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #0a0a0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header" role="banner">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo" aria-label="Genesis Legacy AI Logo">
+                        <span class="logo-text">G</span>
+                    </div>
+                    <div class="title-section">
+                        <h1>Genesis Legacy AI</h1>
+                        <p>Virtual Agent Command Console</p>
+                    </div>
+                </div>
+                <div class="status-section">
+                    <div class="status-indicator" role="status" aria-label="System Status">
+                        <div class="status-dot"></div>
+                        <span>SYSTEM ONLINE</span>
+                    </div>
+                    <div class="timestamp" id="timestamp">
+                        <!-- Timestamp will be inserted by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-grid">
+            <section class="command-console" role="main" aria-label="Agent Command Console">
+                <div class="console-header">
+                    <h2>Active Agent Fleet</h2>
+                    <div class="live-indicator">
+                        <div class="status-dot"></div>
+                        <span>VOICE READY</span>
+                    </div>
+                </div>
+
+                <div class="agent-grid">
+                    <article class="agent-card" role="article" aria-label="JARVIS Agent">
+                        <div class="agent-header">
+                            <div class="agent-avatar">J</div>
+                            <div class="agent-info">
+                                <h3>JARVIS</h3>
+                                <p class="agent-role">Strategic Command</p>
+                            </div>
+                        </div>
+                        <div class="agent-status">
+                            <div class="voice-indicator">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <span>VOICE ACTIVE</span>
+                            </div>
+                            <span class="metric-value success">ONLINE</span>
+                        </div>
+                    </article>
+
+                    <article class="agent-card" role="article" aria-label="ATLAS Agent">
+                        <div class="agent-header">
+                            <div class="agent-avatar">A</div>
+                            <div class="agent-info">
+                                <h3>ATLAS</h3>
+                                <p class="agent-role">Technical Director</p>
+                            </div>
+                        </div>
+                        <div class="agent-status">
+                            <div class="voice-indicator">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <span>VOICE ACTIVE</span>
+                            </div>
+                            <span class="metric-value success">ONLINE</span>
+                        </div>
+                    </article>
+
+                    <article class="agent-card" role="article" aria-label="DEMI VOSS Agent">
+                        <div class="agent-header">
+                            <div class="agent-avatar">D</div>
+                            <div class="agent-info">
+                                <h3>DEMI VOSS</h3>
+                                <p class="agent-role">Design Director</p>
+                            </div>
+                        </div>
+                        <div class="agent-status">
+                            <div class="voice-indicator">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <span>VOICE READY</span>
+                            </div>
+                            <span class="metric-value success">STANDBY</span>
+                        </div>
+                    </article>
+
+                    <article class="agent-card" role="article" aria-label="SEAN ARCHER Agent">
+                        <div class="agent-header">
+                            <div class="agent-avatar">S</div>
+                            <div class="agent-info">
+                                <h3>SEAN ARCHER</h3>
+                                <p class="agent-role">Legal Counsel</p>
+                            </div>
+                        </div>
+                        <div class="agent-status">
+                            <div class="voice-indicator">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <span>VOICE READY</span>
+                            </div>
+                            <span class="metric-value success">STANDBY</span>
+                        </div>
+                    </article>
+
+                    <article class="agent-card" role="article" aria-label="VIC Agent">
+                        <div class="agent-header">
+                            <div class="agent-avatar">V</div>
+                            <div class="agent-info">
+                                <h3>VIC</h3>
+                                <p class="agent-role">Tax & Entity Expert</p>
+                            </div>
+                        </div>
+                        <div class="agent-status">
+                            <div class="voice-indicator">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <span>VOICE READY</span>
+                            </div>
+                            <span class="metric-value success">STANDBY</span>
+                        </div>
+                    </article>
+
+                    <article class="agent-card" role="article" aria-label="SCOUT Agent">
+                        <div class="agent-header">
+                            <div class="agent-avatar">🔍</div>
+                            <div class="agent-info">
+                                <h3>SCOUT</h3>
+                                <p class="agent-role">Intelligence Agent</p>
+                            </div>
+                        </div>
+                        <div class="agent-status">
+                            <div class="voice-indicator">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <span>VOICE READY</span>
+                            </div>
+                            <span class="metric-value success">STANDBY</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="stats-panel" role="complementary" aria-label="System Statistics">
+                <div class="stats-header">
+                    <h2>System Metrics</h2>
+                    <div class="live-indicator">
+                        <div class="status-dot"></div>
+                        <span>LIVE DATA</span>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <span class="metric-label">Active Agents</span>
+                    <span class="metric-value success">6/6</span>
+                </div>
+
+                <div class="metric">
+                    <span class="metric-label">Voice Channels</span>
+                    <span class="metric-value success">READY</span>
+                </div>
+
+                <div class="metric">
+                    <span class="metric-label">Response Time</span>
+                    <span class="metric-value success">&lt;100ms</span>
+                </div>
+
+                <div class="metric">
+                    <span class="metric-label">Uptime</span>
+                    <span class="metric-value success">99.9%</span>
+                </div>
+
+                <div class="metric">
+                    <span class="metric-label">Security</span>
+                    <span class="metric-value success">SECURED</span>
+                </div>
+
+                <div class="metric">
+                    <span class="metric-label">Last Update</span>
+                    <span class="metric-value" id="lastUpdate">NOW</span>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Call to Action -->
+        <section class="cta-section" role="region" aria-label="Call to Action">
+            <div class="cta-content">
+                <h2>Experience the Future of AI</h2>
+                <p>Ready to transform your business with intelligent AI agents? Our voice-enabled multi-agent platform delivers unprecedented automation and collaboration capabilities.</p>
+                
+                <div class="cta-buttons">
+                    <a href="mailto:tyler@buildingwithar.com?subject=Genesis%20Legacy%20AI%20Demo%20Request" class="cta-button primary">
+                        <span>📧</span>
+                        Request Demo
+                    </a>
+                    <a href="tel:+18303818768" class="cta-button secondary">
+                        <span>📞</span>
+                        Call (830) 381-8768
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer" role="contentinfo">
+            <p>&copy; 2024 Genesis Legacy AI. Pioneering the future of intelligent automation.</p>
+            <p>Contact: <a href="mailto:tyler@buildingwithar.com" style="color: #3B82F6;">tyler@buildingwithar.com</a> | Phone: <a href="tel:+18303818768" style="color: #3B82F6;">(830) 381-8768</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Loading overlay
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const timestamp = now.toLocaleString('en-US', {
+                timeZone: 'America/Chicago',
+                hour12: true,
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            
+            const timestampElement = document.getElementById('timestamp');
+            const lastUpdateElement = document.getElementById('lastUpdate');
+            
+            if (timestampElement) {
+                timestampElement.textContent = timestamp + ' CST';
+            }
+            
+            if (lastUpdateElement) {
+                lastUpdateElement.textContent = 'NOW';
+            }
+        }
+
+        // Initialize
+        updateTimestamp();
+        setInterval(updateTimestamp, 30000); // Update every 30 seconds
+
+        // Performance optimizations
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Analytics tracking (placeholder)
+        function trackEvent(action, category, label) {
+            // Add analytics tracking here
+            console.log('Event:', action, category, label);
+        }
+
+        // Track CTA clicks
+        document.querySelectorAll('.cta-button').forEach(button => {
+            button.addEventListener('click', function() {
+                trackEvent('click', 'cta', this.textContent.trim());
+            });
+        });
+    </script>
+</body>
+</html>

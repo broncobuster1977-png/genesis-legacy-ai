@@ -1,0 +1,31 @@
+{
+  "name": "genesis-legacy-ai-website",
+  "version": "1.0.0",
+  "description": "Genesis Legacy AI - Professional Landing Page",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Build complete - static site ready'",
+    "start": "npx serve .",
+    "test": "node livekit-agent-dispatch-test.js"
+  },
+  "keywords": [
+    "genesis",
+    "legacy",
+    "ai",
+    "agents",
+    "voice",
+    "livekit"
+  ],
+  "author": "Atlas Technical Director",
+  "license": "MIT",
+  "dependencies": {
+    "livekit-server-sdk": "^2.0.0",
+    "serve": "^14.2.6"
+  },
+  "homepage": "https://genesislegacyai.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/genesis-legacy-ai/genesis-website.git"
+  }
+}
