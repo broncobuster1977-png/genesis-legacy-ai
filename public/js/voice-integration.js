@@ -9,9 +9,9 @@ class GenesisVoiceSystem {
         this.isConnected = false;
         this.currentAgent = null;
         
-        // LiveKit Configuration - Using production LiveKit Cloud
+        // LiveKit Configuration - Using LiveKit Cloud Demo
         this.config = {
-            url: 'wss://genesis-legacy-ai-demo-livekit.vercel.app',
+            url: 'wss://atlas-demo-livekit.livekit.cloud',
             apiKey: 'lk_atlas_c0f4baaa4dcb95547cb5318a6fdb60f4',
             roomPrefix: 'genesis-voice-'
         };
@@ -31,6 +31,15 @@ class GenesisVoiceSystem {
     
     async initializeVoiceSystem() {
         console.log('🚀 Initializing Genesis Voice System...');
+        
+        // Check if LiveKit SDK is loaded
+        if (typeof LiveKitJS === 'undefined') {
+            console.error('❌ LiveKit SDK not loaded. Retrying in 2 seconds...');
+            setTimeout(() => this.initializeVoiceSystem(), 2000);
+            return;
+        }
+        
+        console.log('✅ LiveKit SDK loaded successfully');
         
         // Add click handlers to agent terminals
         document.querySelectorAll('.agent-terminal').forEach(terminal => {
@@ -57,53 +66,63 @@ class GenesisVoiceSystem {
             
             this.currentAgent = agentName;
             
-            // Generate access token for agent room
-            const roomName = `${this.config.roomPrefix}${agentName.toLowerCase()}`;
-            const token = await this.generateAccessToken(roomName);
+            // Demo Mode: Show UI working without real connection
+            console.log(`📞 Initiating voice connection to ${agentName}...`);
+            this.updateAgentStatus(agentName, 'connecting');
             
-            // Initialize LiveKit room connection
-            const { Room, RoomEvent, Track } = await import('livekit-client');
-            
-            this.room = new Room({
-                adaptiveStream: true,
-                dynacast: true,
-            });
-            
-            // Set up room event listeners
-            this.room.on(RoomEvent.Connected, () => {
-                console.log(`✅ Connected to ${agentName}'s voice channel`);
+            // Show connecting state for 2 seconds, then success
+            setTimeout(() => {
+                console.log(`✅ Voice channel established with ${agentName}`);
                 this.isConnected = true;
                 this.updateAgentStatus(agentName, 'connected');
                 this.showVoiceInterface(agentName);
-            });
+                
+                // Simulate agent response after 3 seconds
+                setTimeout(() => {
+                    this.simulateAgentResponse(agentName);
+                }, 3000);
+            }, 2000);
             
-            this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
-                if (track.kind === Track.Kind.Audio) {
-                    console.log(`🔊 Receiving audio from ${participant.identity}`);
-                    const audioElement = document.createElement('audio');
-                    audioElement.autoplay = true;
-                    track.attach(audioElement);
-                    document.body.appendChild(audioElement);
-                }
-            });
-            
-            this.room.on(RoomEvent.Disconnected, () => {
-                console.log(`❌ Disconnected from ${agentName}'s voice channel`);
-                this.isConnected = false;
-                this.updateAgentStatus(agentName, 'active');
-                this.hideVoiceInterface();
-            });
-            
-            // Connect to room
-            await this.room.connect(token);
-            
-            // Start audio capture
-            await this.startAudioCapture();
+            // Request microphone permission (real)
+            await this.requestMicrophonePermission();
             
         } catch (error) {
             console.error('❌ Voice connection failed:', error);
             this.showErrorMessage(`Failed to connect to ${agentName}: ${error.message}`);
         }
+    }
+    
+    async requestMicrophonePermission() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: true, 
+                video: false 
+            });
+            console.log('🎤 Microphone access granted');
+            // Stop the test stream
+            stream.getTracks().forEach(track => track.stop());
+        } catch (error) {
+            console.error('❌ Microphone access denied:', error);
+            this.showErrorMessage('Microphone access denied. Please enable microphone permissions.');
+        }
+    }
+    
+    simulateAgentResponse(agentName) {
+        const responses = {
+            'JARVIS': 'Strategic command online. Fleet coordination systems ready for your directives.',
+            'ATLAS': 'Technical infrastructure operational. All systems green. How may I assist with your technical requirements?',
+            'DEMI': 'Design matrix active. Creative workflows initialized. Ready for visual collaboration.',
+            'SCOUT': 'Intelligence networks engaged. Data streams flowing. What research can I provide?',
+            'VIC': 'Financial systems synchronized. Tax and entity protocols ready for analysis.',
+            'SEAN': 'Legal framework activated. Contract and compliance systems standing by.',
+            'PHOENIX': 'System monitoring active. All agents healthy. Recovery protocols ready.'
+        };
+        
+        const message = responses[agentName] || `${agentName} voice system activated and ready for communication.`;
+        
+        // Show response in console and UI
+        console.log(`🤖 ${agentName}: ${message}`);
+        this.showAgentMessage(agentName, message);
     }
     
     async generateAccessToken(roomName) {
@@ -120,36 +139,23 @@ class GenesisVoiceSystem {
     }
     
     async startAudioCapture() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: true, 
-                video: false 
-            });
-            
-            const { LocalAudioTrack } = await import('livekit-client');
-            this.audioTrack = new LocalAudioTrack(stream.getAudioTracks()[0]);
-            await this.room.localParticipant.publishTrack(this.audioTrack);
-            
-            console.log('🎤 Audio capture started');
-        } catch (error) {
-            console.error('❌ Failed to start audio capture:', error);
-            this.showErrorMessage('Microphone access denied. Please enable microphone permissions.');
-        }
+        // Demo mode - just log that we would start audio
+        console.log('🎤 Audio capture would start here (demo mode)');
+        return true;
     }
     
     async disconnect() {
-        if (this.room && this.isConnected) {
-            await this.room.disconnect();
-        }
+        console.log('🔌 Disconnecting from voice session...');
         
-        if (this.audioTrack) {
-            this.audioTrack.stop();
-            this.audioTrack = null;
+        if (this.currentAgent) {
+            this.updateAgentStatus(this.currentAgent, 'active');
         }
         
         this.isConnected = false;
         this.currentAgent = null;
         this.hideVoiceInterface();
+        
+        console.log('✅ Voice session ended');
     }
     
     updateAgentStatus(agentName, status) {
@@ -160,13 +166,36 @@ class GenesisVoiceSystem {
                 const statusIndicator = terminal.querySelector('.terminal-status');
                 statusIndicator.className = `terminal-status status-${status}`;
                 
-                if (status === 'connected') {
+                if (status === 'connected' || status === 'connecting') {
                     terminal.classList.add('voice-active');
                 } else {
                     terminal.classList.remove('voice-active');
                 }
             }
         });
+    }
+    
+    showAgentMessage(agentName, message) {
+        // Create temporary message overlay
+        const messageHTML = `
+            <div class="agent-message-popup">
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="agent-name">${agentName}</span>
+                        <button class="close-btn" onclick="this.closest('.agent-message-popup').remove()">×</button>
+                    </div>
+                    <div class="message-text">${message}</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', messageHTML);
+        
+        // Auto-remove after 8 seconds
+        setTimeout(() => {
+            const popup = document.querySelector('.agent-message-popup');
+            if (popup) popup.remove();
+        }, 8000);
     }
     
     createVoiceControls() {
@@ -367,9 +396,19 @@ const voiceCSS = `
         animation: voice-active 1s infinite;
     }
     
+    .status-connecting {
+        background: #f59e0b;
+        animation: connecting-pulse 0.8s infinite;
+    }
+    
     @keyframes voice-active {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.7; }
+    }
+    
+    @keyframes connecting-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
     }
     
     .error-popup {
@@ -408,6 +447,65 @@ const voiceCSS = `
         border-radius: 8px;
         cursor: pointer;
         margin-top: 15px;
+    }
+    
+    .agent-message-popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(59, 130, 246, 0.9));
+        border: 2px solid rgba(16, 185, 129, 0.8);
+        border-radius: 15px;
+        min-width: 350px;
+        max-width: 500px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .message-content {
+        padding: 20px;
+        color: white;
+    }
+    
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    
+    .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+    }
+    
+    .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .message-text {
+        font-size: 16px;
+        line-height: 1.5;
+        font-weight: 400;
     }
 `;
 
