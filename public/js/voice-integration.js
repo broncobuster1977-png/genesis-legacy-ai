@@ -19,7 +19,7 @@ class GenesisVoiceSystem {
     // Conversation modes
     this.conversationMode = 'DIRECT'; // DIRECT, MEETING, BRIEFING
     this.silenceTimer = null;
-    this.speechEndBuffer = 2000; // 2 second silence before processing
+    this.speechEndBuffer = 800; // 800ms silence before processing
     this.isBuffering = false;
     this.bufferedTranscript = '';
 
@@ -84,7 +84,7 @@ class GenesisVoiceSystem {
         }
       }
 
-      // Handle speech with 2000ms silence buffer
+      // Handle speech with 800ms silence buffer
       if (finalTranscript.trim()) {
         this.bufferedTranscript = finalTranscript.trim();
         this.startSilenceBuffer();
@@ -469,7 +469,7 @@ class GenesisVoiceSystem {
           margin-top: 6px;
           line-height: 1.3;
         ">
-          2s silence buffer, auto mic reopen
+          800ms silence buffer, auto mic reopen
         </div>
       </div>
     `;
@@ -480,7 +480,7 @@ class GenesisVoiceSystem {
     const modeDescription = document.getElementById('mode-description');
 
     const modeDescriptions = {
-      'DIRECT': '2s silence buffer, auto mic reopen',
+      'DIRECT': '800ms silence buffer, auto mic reopen',
       'MEETING': 'Say agent name first, multi-agent',
       'BRIEFING': 'Agent speaks uninterrupted'
     };
@@ -515,7 +515,7 @@ class GenesisVoiceSystem {
       if (selector) {
         selector.value = mode;
         const descriptions = {
-          'DIRECT': '2s silence buffer, auto mic reopen',
+          'DIRECT': '800ms silence buffer, auto mic reopen',
           'MEETING': 'Say agent name first, multi-agent', 
           'BRIEFING': 'Agent speaks uninterrupted'
         };
