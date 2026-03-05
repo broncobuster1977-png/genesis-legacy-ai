@@ -32,6 +32,7 @@
             --genesis-text-secondary: #94A3B8;
             --genesis-success: #10B981;
             --genesis-accent: #6BB6FF;
+            --genesis-warning: #F59E0B;
         }
         
         body {
@@ -184,81 +185,106 @@
             transform: translateY(0);
         }
         
-        /* Left Sidebar - Agent Fleet */
-        .agent-sidebar {
+        /* Left Sidebar - Participants */
+        .participants-sidebar {
             background: var(--genesis-panel);
             border-right: 1px solid var(--genesis-border);
-            padding: 2rem 1.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .sidebar-section {
+            flex: 1;
         }
         
         .sidebar-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--genesis-text-primary);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .sidebar-title::before {
+        .sidebar-title.humans::before {
             content: '👥';
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
-        .agent-fleet {
+        .sidebar-title.agents::before {
+            content: '🤖';
+            font-size: 0.9rem;
+        }
+        
+        .participant-list, .agent-fleet {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.75rem;
         }
         
-        .agent-item {
-            padding: 1rem;
+        .participant-item, .agent-item {
+            padding: 0.75rem 1rem;
             background: var(--genesis-darker);
             border: 2px solid var(--genesis-border);
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
         }
         
-        .agent-item:hover {
+        .participant-item:hover, .agent-item:hover {
             border-color: var(--genesis-steel);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
-        .agent-item.active {
+        .participant-item.speaking, .agent-item.active {
             border-color: var(--genesis-neural);
             background: rgba(107, 163, 214, 0.1);
             box-shadow: 0 4px 20px rgba(107, 163, 214, 0.2);
         }
         
-        .agent-name {
+        .participant-name, .agent-name {
             font-weight: 600;
             color: var(--genesis-text-primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .agent-role {
+            margin-bottom: 0.25rem;
             font-size: 0.9rem;
-            color: var(--genesis-text-secondary);
-            line-height: 1.4;
         }
         
-        .agent-status {
+        .participant-status, .agent-role {
+            font-size: 0.8rem;
+            color: var(--genesis-text-secondary);
+            line-height: 1.3;
+        }
+        
+        .status-indicator {
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--genesis-success);
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             margin-right: 0.5rem;
             animation: pulse 2s infinite;
         }
         
+        .status-indicator.online { background: var(--genesis-success); }
+        .status-indicator.speaking { background: var(--genesis-neural); animation: pulse-fast 1s infinite; }
+        .status-indicator.away { background: var(--genesis-warning); }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
+        }
+        
+        @keyframes pulse-fast {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
         }
         
         /* Center - Chat Interface */
@@ -269,38 +295,81 @@
         }
         
         .chat-header {
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             background: var(--genesis-panel);
             border-bottom: 1px solid var(--genesis-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .chat-title {
+        .chat-title-section h2 {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--genesis-text-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .chat-subtitle {
             color: var(--genesis-text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+        }
+        
+        .active-participants {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .active-count {
+            background: var(--genesis-darker);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--genesis-border);
+            font-size: 0.85rem;
+            color: var(--genesis-text-secondary);
+        }
+        
+        .active-count .count {
+            color: var(--genesis-neural);
+            font-weight: 600;
+        }
+        
+        .active-avatars {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .active-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border: 2px solid var(--genesis-panel);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
         }
         
         .chat-messages {
             flex: 1;
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
         }
         
         .message {
             max-width: 80%;
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
             line-height: 1.5;
+            font-size: 0.95rem;
         }
         
         .message.grace {
@@ -317,32 +386,70 @@
         
         .message-sender {
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             color: var(--genesis-neural);
+            font-size: 0.85rem;
         }
         
+        /* Compact Chat Input */
         .chat-input-container {
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             background: var(--genesis-panel);
             border-top: 1px solid var(--genesis-border);
         }
         
+        .chat-controls {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .control-button {
+            padding: 0.5rem 1rem;
+            background: var(--genesis-darker);
+            border: 1px solid var(--genesis-border);
+            border-radius: 8px;
+            color: var(--genesis-text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .control-button:hover {
+            border-color: var(--genesis-steel);
+            color: var(--genesis-text-primary);
+        }
+        
+        .control-button.active {
+            border-color: var(--genesis-neural);
+            background: rgba(107, 163, 214, 0.1);
+            color: var(--genesis-neural);
+        }
+        
+        .control-button.danger {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
         .chat-input-wrapper {
             display: flex;
-            gap: 1rem;
-            align-items: flex-end;
+            gap: 0.75rem;
+            align-items: center;
         }
         
         .chat-input {
             flex: 1;
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1rem;
             background: var(--genesis-darker);
             border: 2px solid var(--genesis-border);
-            border-radius: 12px;
+            border-radius: 8px;
             color: var(--genesis-text-primary);
             resize: none;
-            min-height: 50px;
-            max-height: 120px;
+            height: 40px;
+            font-size: 0.95rem;
         }
         
         .chat-input:focus {
@@ -351,95 +458,128 @@
         }
         
         .send-button {
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            font-size: 0.9rem;
         }
         
         .send-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(107, 163, 214, 0.4);
         }
         
-        /* Right Sidebar - Neural Graph */
+        /* Right Sidebar - Neural Activity */
         .neural-sidebar {
             background: var(--genesis-panel);
             border-left: 1px solid var(--genesis-border);
-            padding: 2rem 1.5rem;
+            padding: 1.5rem;
         }
         
         .neural-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--genesis-text-primary);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .neural-title::before {
             content: '🧠';
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
         .neural-graph {
             width: 100%;
-            height: 300px;
+            height: 200px;
             background: var(--genesis-darker);
             border: 1px solid var(--genesis-border);
             border-radius: 12px;
             position: relative;
             overflow: hidden;
+            margin-bottom: 1rem;
         }
         
         .neural-node {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: var(--genesis-neural);
             border-radius: 50%;
-            opacity: 0.7;
+            opacity: 0.8;
             animation: float 3s ease-in-out infinite;
         }
         
-        .neural-node:nth-child(1) { top: 20%; left: 30%; animation-delay: 0s; }
-        .neural-node:nth-child(2) { top: 40%; left: 70%; animation-delay: 0.5s; }
-        .neural-node:nth-child(3) { top: 60%; left: 20%; animation-delay: 1s; }
-        .neural-node:nth-child(4) { top: 80%; left: 60%; animation-delay: 1.5s; }
-        .neural-node:nth-child(5) { top: 30%; left: 80%; animation-delay: 2s; }
+        .neural-node:nth-child(1) { top: 15%; left: 25%; animation-delay: 0s; }
+        .neural-node:nth-child(2) { top: 35%; left: 75%; animation-delay: 0.5s; }
+        .neural-node:nth-child(3) { top: 55%; left: 15%; animation-delay: 1s; }
+        .neural-node:nth-child(4) { top: 75%; left: 65%; animation-delay: 1.5s; }
+        .neural-node:nth-child(5) { top: 25%; left: 85%; animation-delay: 2s; }
+        .neural-node:nth-child(6) { top: 45%; left: 45%; animation-delay: 2.5s; }
         
         @keyframes float {
-            0%, 100% { transform: translateY(0px); opacity: 0.7; }
-            50% { transform: translateY(-10px); opacity: 1; }
+            0%, 100% { transform: translateY(0px); opacity: 0.8; }
+            50% { transform: translateY(-8px); opacity: 1; }
         }
         
-        .neural-connections {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+        .neural-explanation {
+            background: var(--genesis-darker);
+            border: 1px solid var(--genesis-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: var(--genesis-text-secondary);
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
         }
         
-        .neural-line {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, var(--genesis-neural), transparent);
-            opacity: 0.3;
-            animation: pulse-line 4s ease-in-out infinite;
+        .neural-explanation h4 {
+            color: var(--genesis-neural);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
         
-        @keyframes pulse-line {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.5; }
+        .system-status {
+            background: var(--genesis-darker);
+            border: 1px solid var(--genesis-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.85rem;
         }
+        
+        .system-status .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .system-status .status-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-label {
+            color: var(--genesis-text-secondary);
+            font-weight: 500;
+        }
+        
+        .status-value {
+            font-weight: 600;
+        }
+        
+        .status-value.online { color: var(--genesis-success); }
+        .status-value.active { color: var(--genesis-neural); }
+        .status-value.processing { color: var(--genesis-warning); }
         
         /* Mobile Responsive */
         @media (max-width: 1024px) {
@@ -448,7 +588,7 @@
                 grid-template-rows: auto 1fr auto;
             }
             
-            .agent-sidebar,
+            .participants-sidebar,
             .neural-sidebar {
                 display: none;
             }
@@ -466,6 +606,16 @@
             
             .chat-input-container {
                 padding: 1rem;
+            }
+            
+            .chat-controls {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .control-button {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
         }
     </style>
@@ -486,33 +636,47 @@
 
     <!-- Main Interface -->
     <div class="main-interface" id="mainInterface">
-        <!-- Left Sidebar - Agent Fleet -->
-        <div class="agent-sidebar">
-            <h3 class="sidebar-title">Agent Fleet</h3>
-            <div class="agent-fleet">
-                <div class="agent-item active" data-agent="grace">
-                    <div class="agent-name"><span class="agent-status"></span>Grace</div>
-                    <div class="agent-role">Welcome & Onboarding</div>
+        <!-- Left Sidebar - Participants & Agents -->
+        <div class="participants-sidebar">
+            <!-- Human Participants -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title humans">Participants</h3>
+                <div class="participant-list" id="participantList">
+                    <div class="participant-item">
+                        <div class="participant-name"><span class="status-indicator online"></span>Tyler Mason</div>
+                        <div class="participant-status">Host • Genesis Founder</div>
+                    </div>
                 </div>
-                <div class="agent-item" data-agent="jarvis">
-                    <div class="agent-name"><span class="agent-status"></span>JARVIS</div>
-                    <div class="agent-role">Strategic Command</div>
-                </div>
-                <div class="agent-item" data-agent="atlas">
-                    <div class="agent-name"><span class="agent-status"></span>Atlas</div>
-                    <div class="agent-role">Technical Director</div>
-                </div>
-                <div class="agent-item" data-agent="demi">
-                    <div class="agent-name"><span class="agent-status"></span>Demi Voss</div>
-                    <div class="agent-role">Creative Director</div>
-                </div>
-                <div class="agent-item" data-agent="vic">
-                    <div class="agent-name"><span class="agent-status"></span>Vic Santoro</div>
-                    <div class="agent-role">Business Strategy</div>
-                </div>
-                <div class="agent-item" data-agent="sean">
-                    <div class="agent-name"><span class="agent-status"></span>Sean Pierce</div>
-                    <div class="agent-role">Legal Counsel</div>
+            </div>
+            
+            <!-- AI Agent Fleet -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title agents">Agent Fleet</h3>
+                <div class="agent-fleet">
+                    <div class="agent-item active" data-agent="grace">
+                        <div class="agent-name"><span class="status-indicator speaking"></span>Grace</div>
+                        <div class="agent-role">Welcome & Onboarding</div>
+                    </div>
+                    <div class="agent-item" data-agent="jarvis">
+                        <div class="agent-name"><span class="status-indicator online"></span>JARVIS</div>
+                        <div class="agent-role">Strategic Command</div>
+                    </div>
+                    <div class="agent-item" data-agent="atlas">
+                        <div class="agent-name"><span class="status-indicator online"></span>Atlas</div>
+                        <div class="agent-role">Technical Director</div>
+                    </div>
+                    <div class="agent-item" data-agent="demi">
+                        <div class="agent-name"><span class="status-indicator online"></span>Demi Voss</div>
+                        <div class="agent-role">Creative Director</div>
+                    </div>
+                    <div class="agent-item" data-agent="vic">
+                        <div class="agent-name"><span class="status-indicator online"></span>Vic Santoro</div>
+                        <div class="agent-role">Business Strategy</div>
+                    </div>
+                    <div class="agent-item" data-agent="sean">
+                        <div class="agent-name"><span class="status-indicator online"></span>Sean Pierce</div>
+                        <div class="agent-role">Legal Counsel</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -520,8 +684,17 @@
         <!-- Center - Chat Interface -->
         <div class="chat-center">
             <div class="chat-header">
-                <h2 class="chat-title" id="chatTitle">Welcome to Genesis</h2>
-                <p class="chat-subtitle" id="chatSubtitle">Connected to Grace - Welcome & Onboarding Agent</p>
+                <div class="chat-title-section">
+                    <h2 id="chatTitle">Genesis Neural Network Room</h2>
+                    <p class="chat-subtitle" id="chatSubtitle">Connected to Grace - Welcome & Onboarding Agent</p>
+                </div>
+                <div class="active-participants">
+                    <div class="active-count">Active: <span class="count" id="activeCount">2</span></div>
+                    <div class="active-avatars">
+                        <div class="active-avatar" title="Tyler Mason">TM</div>
+                        <div class="active-avatar" title="Grace">G</div>
+                    </div>
+                </div>
             </div>
             
             <div class="chat-messages" id="chatMessages">
@@ -532,6 +705,20 @@
             </div>
             
             <div class="chat-input-container">
+                <div class="chat-controls">
+                    <button class="control-button" id="shareScreenBtn">
+                        📺 Share Screen
+                    </button>
+                    <button class="control-button" id="cameraBtn">
+                        📹 Camera
+                    </button>
+                    <button class="control-button" id="micBtn">
+                        🎤 Mic
+                    </button>
+                    <button class="control-button" id="viewScreenBtn">
+                        👀 View Shared
+                    </button>
+                </div>
                 <div class="chat-input-wrapper">
                     <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
                     <button class="send-button" onclick="sendMessage()">Send</button>
@@ -539,21 +726,41 @@
             </div>
         </div>
 
-        <!-- Right Sidebar - Neural Graph -->
+        <!-- Right Sidebar - Neural Activity -->
         <div class="neural-sidebar">
             <h3 class="neural-title">Neural Activity</h3>
+            
             <div class="neural-graph">
-                <div class="neural-connections"></div>
+                <div class="neural-node"></div>
                 <div class="neural-node"></div>
                 <div class="neural-node"></div>
                 <div class="neural-node"></div>
                 <div class="neural-node"></div>
                 <div class="neural-node"></div>
             </div>
-            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--genesis-darker); border-radius: 8px; font-size: 0.85rem; color: var(--genesis-text-secondary);">
-                <div style="margin-bottom: 0.5rem;"><strong style="color: var(--genesis-neural);">Active:</strong> Grace</div>
-                <div style="margin-bottom: 0.5rem;"><strong style="color: var(--genesis-steel);">Processing:</strong> Welcome sequence</div>
-                <div><strong style="color: var(--genesis-success);">Status:</strong> Online</div>
+            
+            <div class="neural-explanation">
+                <h4>What You're Seeing:</h4>
+                <p>Live neural processing patterns from Genesis AI agents as they analyze conversation context, retrieve memories, and formulate responses.</p>
+            </div>
+            
+            <div class="system-status">
+                <div class="status-row">
+                    <span class="status-label">Primary Agent:</span>
+                    <span class="status-value active">Grace</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Processing:</span>
+                    <span class="status-value processing">Welcome Sequence</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Network Status:</span>
+                    <span class="status-value online">All Systems Online</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Memory Access:</span>
+                    <span class="status-value active">Active</span>
+                </div>
             </div>
         </div>
     </div>
@@ -582,7 +789,29 @@
                 
                 // Update Grace's welcome message
                 document.getElementById('graceWelcome').textContent = `Hi ${name}. My name is Grace. I'm glad you're here.`;
+                
+                // Add user to participant list
+                addParticipant(name, 'Participant');
+                
+                // Update active count
+                updateActiveCount();
             }, 300);
+        }
+        
+        function addParticipant(name, role) {
+            const participantList = document.getElementById('participantList');
+            const participantItem = document.createElement('div');
+            participantItem.className = 'participant-item';
+            participantItem.innerHTML = `
+                <div class="participant-name"><span class="status-indicator online"></span>${name}</div>
+                <div class="participant-status">${role}</div>
+            `;
+            participantList.appendChild(participantItem);
+        }
+        
+        function updateActiveCount() {
+            const count = document.querySelectorAll('.participant-item').length + 1; // +1 for active agent
+            document.getElementById('activeCount').textContent = count;
         }
         
         function sendMessage() {
@@ -614,6 +843,33 @@
             }, 1000);
         }
         
+        // Control button functionality
+        document.getElementById('shareScreenBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            if (this.classList.contains('active')) {
+                this.innerHTML = '🛑 Stop Sharing';
+            } else {
+                this.innerHTML = '📺 Share Screen';
+            }
+        });
+        
+        document.getElementById('cameraBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+        
+        document.getElementById('micBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+        
+        document.getElementById('viewScreenBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            if (this.classList.contains('active')) {
+                this.innerHTML = '❌ Close View';
+            } else {
+                this.innerHTML = '👀 View Shared';
+            }
+        });
+        
         // Enter key to send message
         document.getElementById('chatInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -640,18 +896,21 @@
                 this.classList.add('active');
                 
                 // Update chat header
-                const agentName = this.querySelector('.agent-name').textContent.replace('●', '').trim();
+                const agentName = this.querySelector('.agent-name').textContent.replace(/[🟢⚡●]/, '').trim();
                 const agentRole = this.querySelector('.agent-role').textContent;
                 
                 document.getElementById('chatTitle').textContent = `Connected to ${agentName}`;
                 document.getElementById('chatSubtitle').textContent = `${agentName} - ${agentRole}`;
+                
+                // Update neural status
+                document.querySelector('.system-status .status-value.active').textContent = agentName;
             });
         });
         
         // Auto-resize textarea
         document.getElementById('chatInput').addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 60) + 'px';
         });
     </script>
 </body>
