@@ -20,6 +20,8 @@
   "author": "Atlas Technical Director",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "livekit-server-sdk": "^2.0.0",
     "serve": "^14.2.6"
   },
