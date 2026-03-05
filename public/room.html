@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis Legacy AI - Neural Network Room</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --genesis-navy: #0d1520;
+            --genesis-blue: #1a2744;
+            --genesis-steel: #4a6d8c;
+            --genesis-neural: #6ba3d6;
+            --genesis-dark: #0F1419;
+            --genesis-darker: #0A0E13;
+            --genesis-panel: #1A1F2E;
+            --genesis-border: #2A3441;
+            --genesis-text-primary: #F8FAFC;
+            --genesis-text-secondary: #94A3B8;
+            --genesis-success: #10B981;
+            --genesis-accent: #6BB6FF;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--genesis-darker) 0%, var(--genesis-dark) 100%);
+            color: var(--genesis-text-primary);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Subtle background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(46, 117, 182, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(74, 144, 226, 0.06) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Entry Screen */
+        .entry-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--genesis-darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .entry-screen.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        
+        .entry-container {
+            text-align: center;
+            max-width: 500px;
+            padding: 3rem;
+            background: var(--genesis-panel);
+            border-radius: 16px;
+            border: 1px solid var(--genesis-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        .genesis-logo-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border-radius: 16px;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(107, 163, 214, 0.3);
+        }
+        
+        .entry-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--genesis-text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .entry-subtitle {
+            color: var(--genesis-text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--genesis-darker);
+            border: 2px solid var(--genesis-border);
+            border-radius: 12px;
+            color: var(--genesis-text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: var(--genesis-neural);
+            box-shadow: 0 0 0 3px rgba(107, 163, 214, 0.2);
+        }
+        
+        .name-input::placeholder {
+            color: var(--genesis-text-secondary);
+        }
+        
+        .enter-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+        }
+        
+        .enter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(107, 163, 214, 0.6);
+        }
+        
+        .enter-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(107, 163, 214, 0.2);
+        }
+        
+        /* Main Interface */
+        .main-interface {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            height: 100vh;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        }
+        
+        .main-interface.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Left Sidebar - Agent Fleet */
+        .agent-sidebar {
+            background: var(--genesis-panel);
+            border-right: 1px solid var(--genesis-border);
+            padding: 2rem 1.5rem;
+        }
+        
+        .sidebar-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--genesis-text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-title::before {
+            content: '👥';
+            font-size: 1rem;
+        }
+        
+        .agent-fleet {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .agent-item {
+            padding: 1rem;
+            background: var(--genesis-darker);
+            border: 2px solid var(--genesis-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .agent-item:hover {
+            border-color: var(--genesis-steel);
+            transform: translateY(-2px);
+        }
+        
+        .agent-item.active {
+            border-color: var(--genesis-neural);
+            background: rgba(107, 163, 214, 0.1);
+            box-shadow: 0 4px 20px rgba(107, 163, 214, 0.2);
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            color: var(--genesis-text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .agent-role {
+            font-size: 0.9rem;
+            color: var(--genesis-text-secondary);
+            line-height: 1.4;
+        }
+        
+        .agent-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--genesis-success);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Center - Chat Interface */
+        .chat-center {
+            display: flex;
+            flex-direction: column;
+            background: var(--genesis-dark);
+        }
+        
+        .chat-header {
+            padding: 1.5rem 2rem;
+            background: var(--genesis-panel);
+            border-bottom: 1px solid var(--genesis-border);
+        }
+        
+        .chat-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--genesis-text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .chat-subtitle {
+            color: var(--genesis-text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            line-height: 1.5;
+        }
+        
+        .message.grace {
+            background: rgba(107, 163, 214, 0.1);
+            border: 1px solid rgba(107, 163, 214, 0.3);
+            align-self: flex-start;
+        }
+        
+        .message.user {
+            background: var(--genesis-panel);
+            border: 1px solid var(--genesis-border);
+            align-self: flex-end;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--genesis-neural);
+        }
+        
+        .chat-input-container {
+            padding: 1.5rem 2rem;
+            background: var(--genesis-panel);
+            border-top: 1px solid var(--genesis-border);
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: var(--genesis-darker);
+            border: 2px solid var(--genesis-border);
+            border-radius: 12px;
+            color: var(--genesis-text-primary);
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--genesis-neural);
+        }
+        
+        .send-button {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+        }
+        
+        /* Right Sidebar - Neural Graph */
+        .neural-sidebar {
+            background: var(--genesis-panel);
+            border-left: 1px solid var(--genesis-border);
+            padding: 2rem 1.5rem;
+        }
+        
+        .neural-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--genesis-text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .neural-title::before {
+            content: '🧠';
+            font-size: 1rem;
+        }
+        
+        .neural-graph {
+            width: 100%;
+            height: 300px;
+            background: var(--genesis-darker);
+            border: 1px solid var(--genesis-border);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .neural-node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--genesis-neural);
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .neural-node:nth-child(1) { top: 20%; left: 30%; animation-delay: 0s; }
+        .neural-node:nth-child(2) { top: 40%; left: 70%; animation-delay: 0.5s; }
+        .neural-node:nth-child(3) { top: 60%; left: 20%; animation-delay: 1s; }
+        .neural-node:nth-child(4) { top: 80%; left: 60%; animation-delay: 1.5s; }
+        .neural-node:nth-child(5) { top: 30%; left: 80%; animation-delay: 2s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); opacity: 0.7; }
+            50% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .neural-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .neural-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--genesis-neural), transparent);
+            opacity: 0.3;
+            animation: pulse-line 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-line {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .main-interface {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            
+            .agent-sidebar,
+            .neural-sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .entry-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            
+            .chat-messages {
+                padding: 1rem;
+            }
+            
+            .chat-input-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Entry Screen -->
+    <div class="entry-screen" id="entryScreen">
+        <div class="entry-container">
+            <div class="genesis-logo-large">G</div>
+            <h1 class="entry-title">Neural Network Room</h1>
+            <p class="entry-subtitle">
+                Enter your name to begin your personalized AI experience with Genesis Legacy AI.
+            </p>
+            <input type="text" class="name-input" id="nameInput" placeholder="Enter your name..." autocomplete="given-name">
+            <button class="enter-button" id="enterButton" onclick="enterRoom()">Enter the Room</button>
+        </div>
+    </div>
+
+    <!-- Main Interface -->
+    <div class="main-interface" id="mainInterface">
+        <!-- Left Sidebar - Agent Fleet -->
+        <div class="agent-sidebar">
+            <h3 class="sidebar-title">Agent Fleet</h3>
+            <div class="agent-fleet">
+                <div class="agent-item active" data-agent="grace">
+                    <div class="agent-name"><span class="agent-status"></span>Grace</div>
+                    <div class="agent-role">Welcome & Onboarding</div>
+                </div>
+                <div class="agent-item" data-agent="jarvis">
+                    <div class="agent-name"><span class="agent-status"></span>JARVIS</div>
+                    <div class="agent-role">Strategic Command</div>
+                </div>
+                <div class="agent-item" data-agent="atlas">
+                    <div class="agent-name"><span class="agent-status"></span>Atlas</div>
+                    <div class="agent-role">Technical Director</div>
+                </div>
+                <div class="agent-item" data-agent="demi">
+                    <div class="agent-name"><span class="agent-status"></span>Demi Voss</div>
+                    <div class="agent-role">Creative Director</div>
+                </div>
+                <div class="agent-item" data-agent="vic">
+                    <div class="agent-name"><span class="agent-status"></span>Vic Santoro</div>
+                    <div class="agent-role">Business Strategy</div>
+                </div>
+                <div class="agent-item" data-agent="sean">
+                    <div class="agent-name"><span class="agent-status"></span>Sean Pierce</div>
+                    <div class="agent-role">Legal Counsel</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center - Chat Interface -->
+        <div class="chat-center">
+            <div class="chat-header">
+                <h2 class="chat-title" id="chatTitle">Welcome to Genesis</h2>
+                <p class="chat-subtitle" id="chatSubtitle">Connected to Grace - Welcome & Onboarding Agent</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message grace">
+                    <div class="message-sender">Grace</div>
+                    <div id="graceWelcome">Hello! I'm Grace. I'm glad you're here.</div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                    <button class="send-button" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Neural Graph -->
+        <div class="neural-sidebar">
+            <h3 class="neural-title">Neural Activity</h3>
+            <div class="neural-graph">
+                <div class="neural-connections"></div>
+                <div class="neural-node"></div>
+                <div class="neural-node"></div>
+                <div class="neural-node"></div>
+                <div class="neural-node"></div>
+                <div class="neural-node"></div>
+            </div>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--genesis-darker); border-radius: 8px; font-size: 0.85rem; color: var(--genesis-text-secondary);">
+                <div style="margin-bottom: 0.5rem;"><strong style="color: var(--genesis-neural);">Active:</strong> Grace</div>
+                <div style="margin-bottom: 0.5rem;"><strong style="color: var(--genesis-steel);">Processing:</strong> Welcome sequence</div>
+                <div><strong style="color: var(--genesis-success);">Status:</strong> Online</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userName = '';
+        
+        function enterRoom() {
+            const nameInput = document.getElementById('nameInput');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                nameInput.style.borderColor = 'var(--genesis-error)';
+                nameInput.focus();
+                return;
+            }
+            
+            userName = name;
+            
+            // Hide entry screen
+            document.getElementById('entryScreen').classList.add('hidden');
+            
+            // Show main interface
+            setTimeout(() => {
+                document.getElementById('mainInterface').classList.add('visible');
+                
+                // Update Grace's welcome message
+                document.getElementById('graceWelcome').textContent = `Hi ${name}. My name is Grace. I'm glad you're here.`;
+            }, 300);
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            const chatMessages = document.getElementById('chatMessages');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `<div class="message-sender">${userName}</div><div>${message}</div>`;
+            chatMessages.appendChild(userMessage);
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulate Grace response
+            setTimeout(() => {
+                const graceResponse = document.createElement('div');
+                graceResponse.className = 'message grace';
+                graceResponse.innerHTML = `<div class="message-sender">Grace</div><div>Thank you for your message, ${userName}. I'm here to help you get started with Genesis Legacy AI.</div>`;
+                chatMessages.appendChild(graceResponse);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+        
+        // Enter key to send message
+        document.getElementById('chatInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Enter key to enter room
+        document.getElementById('nameInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                enterRoom();
+            }
+        });
+        
+        // Agent selection
+        document.querySelectorAll('.agent-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active from all agents
+                document.querySelectorAll('.agent-item').forEach(a => a.classList.remove('active'));
+                
+                // Add active to clicked agent
+                this.classList.add('active');
+                
+                // Update chat header
+                const agentName = this.querySelector('.agent-name').textContent.replace('●', '').trim();
+                const agentRole = this.querySelector('.agent-role').textContent;
+                
+                document.getElementById('chatTitle').textContent = `Connected to ${agentName}`;
+                document.getElementById('chatSubtitle').textContent = `${agentName} - ${agentRole}`;
+            });
+        });
+        
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    </script>
+</body>
+</html>

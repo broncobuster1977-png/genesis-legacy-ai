@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6ba3d6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a6d8c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield Background -->
+  <path d="M6 4 L26 4 Q28 4 28 6 L28 20 Q28 26 20 28 L16 29 Q16 29 16 29 Q16 29 12 28 Q4 26 4 20 L4 6 Q4 4 6 4 Z" fill="url(#faviconGradient)" stroke="#1a2744" stroke-width="0.5"/>
+  
+  <!-- G in Shield -->
+  <text x="16" y="22" font-family="Orbitron, sans-serif" font-size="14" font-weight="700" fill="white" text-anchor="middle">G</text>
+  
+</svg>

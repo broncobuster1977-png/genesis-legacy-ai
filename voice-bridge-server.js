@@ -23,7 +23,7 @@ const OPENCLAW_PATH = '/home/bronc/.openclaw';
 const AGENT_CONFIG = {
   'JARVIS': {
     session: 'agent:main:main',
-    openclaw_agent: 'jarvis',
+    openclaw_agent: 'main',
     personality: 'Strategic Command',
     voice_description: 'commanding, authoritative, precise',
     // ElevenLabs voice ID - Atlas to fill in after setup
@@ -83,7 +83,18 @@ async function queryAgent(agentName, userMessage) {
 
   // Write message to agent inbox for processing
   const timestamp = Date.now();
-  const inboxFile = `${OPENCLAW_PATH}/workspace/agents/${agent.openclaw_agent}/inbox/voice-${timestamp}.md`;
+  // Map agent IDs to their workspace directory names
+  const workspaceDirMap = {
+    'main': 'jarvis',
+    'atlas': 'atlas', 
+    'demi-voss': 'demi-voss',
+    'sean-archer': 'sean-archer',
+    'vic': 'vic',
+    'scout': 'scout'
+  };
+  
+  const workspaceDir = workspaceDirMap[agent.openclaw_agent] || agent.openclaw_agent;
+  const inboxFile = `${OPENCLAW_PATH}/workspace/agents/${workspaceDir}/inbox/voice-${timestamp}.md`;
   const messageContent = `# Voice Query - ${new Date().toISOString()}\n\nFrom: Tyler (Voice Interface)\nTo: ${agentName}\n\n${userMessage}\n\nRespond briefly (2-3 sentences max for voice). Be direct.`;
 
   // Write to inbox
@@ -91,7 +102,7 @@ async function queryAgent(agentName, userMessage) {
 
   // Use OpenClaw CLI to query the agent directly
   // This sends the message to the agent's active session
-  const clawCommand = `cd ${OPENCLAW_PATH} && echo '${userMessage.replace(/'/g, "'\\''")}' | timeout 30 openclaw --agent ${agent.openclaw_agent} --no-interactive 2>/dev/null | tail -20`;
+  const clawCommand = `cd ${OPENCLAW_PATH} && timeout 30 openclaw agent --agent ${agent.openclaw_agent} --message "${userMessage}" 2>/dev/null`;
   
   try {
     const { stdout, stderr } = await execAsync(clawCommand, { timeout: 35000 });
@@ -115,13 +126,13 @@ async function queryAgent(agentName, userMessage) {
   // Fallback: Check agent outbox for recent responses
   try {
     const outboxCheck = await execAsync(
-      `ls -t ${OPENCLAW_PATH}/workspace/agents/${agent.openclaw_agent}/outbox/ 2>/dev/null | head -1`
+      `ls -t ${OPENCLAW_PATH}/workspace/agents/${workspaceDir}/outbox/ 2>/dev/null | head -1`
     );
     
     if (outboxCheck.stdout.trim()) {
       const latestFile = outboxCheck.stdout.trim();
       const { stdout: fileContent } = await execAsync(
-        `cat "${OPENCLAW_PATH}/workspace/agents/${agent.openclaw_agent}/outbox/${latestFile}" 2>/dev/null | tail -10`
+        `cat "${OPENCLAW_PATH}/workspace/agents/${workspaceDir}/outbox/${latestFile}" 2>/dev/null | tail -10`
       );
       if (fileContent.trim()) {
         return fileContent.trim();
@@ -148,7 +159,7 @@ async function textToSpeech(text, voiceId) {
   const curlCmd = `curl -s -X POST "${url}" \
     -H "xi-api-key: ${apiKey}" \
     -H "Content-Type: application/json" \
-    -d '{"text":"${text.replace(/'/g, "'\\''")}","model_id":"eleven_monolingual_v1","voice_settings":{"stability":0.5,"similarity_boost":0.75}}' \
+    -d '{"text":"${text.replace(/'/g, "'\\''")}","model_id":"eleven_turbo_v2_5","voice_settings":{"stability":0.5,"similarity_boost":0.75,"style":0.0,"use_speaker_boost":true}}' \
     --output /tmp/voice-${Date.now()}.mp3 && echo "success"`;
   
   try {
@@ -247,7 +258,7 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({
         agent,
         response,
-        use_elevenlabs: hasElevenLabs,
+        use_elevenlabs: hasElevenLabs ? true : false,
         voice_id: agentConfig?.elevenlabs_voice_id || null,
         personality: agentConfig?.personality || 'Agent'
       }));
