@@ -254,6 +254,9 @@
             color: var(--genesis-text-primary);
             margin-bottom: 0.25rem;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .participant-status, .agent-role {
@@ -353,6 +356,36 @@
             font-size: 0.8rem;
             font-weight: 600;
             color: white;
+            overflow: hidden;
+        }
+        
+        .active-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        
+        .agent-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .agent-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
         
         .chat-messages {
@@ -654,7 +687,14 @@
                 <h3 class="sidebar-title agents">Agent Fleet</h3>
                 <div class="agent-fleet">
                     <div class="agent-item active" data-agent="grace">
-                        <div class="agent-name"><span class="status-indicator speaking"></span>Grace</div>
+                        <div class="agent-name">
+                            <div class="agent-avatar">
+                                <img src="/images/agents/grace.jpg" alt="Grace Sullivan" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span style="display: none;">G</span>
+                            </div>
+                            <span>Grace</span>
+                            <span class="status-indicator speaking"></span>
+                        </div>
                         <div class="agent-role">Welcome & Onboarding</div>
                     </div>
                     <div class="agent-item" data-agent="jarvis">
@@ -692,7 +732,9 @@
                     <div class="active-count">Active: <span class="count" id="activeCount">2</span></div>
                     <div class="active-avatars">
                         <div class="active-avatar" title="Tyler Mason">TM</div>
-                        <div class="active-avatar" title="Grace">G</div>
+                        <div class="active-avatar" title="Grace">
+                            <img src="/images/agents/grace.jpg" alt="Grace" onerror="this.style.display='none'; this.parentElement.innerHTML='G';">
+                        </div>
                     </div>
                 </div>
             </div>
