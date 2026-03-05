@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis Legacy AI Pricing - Beta Coming Soon</title>
+    <meta name="description" content="Privacy-first AI pricing for everyday American families. Beta access coming soon with transparent, fair pricing.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Genesis Brand Colors */
+            --genesis-navy: #0d1520;
+            --genesis-blue: #1a2744;
+            --genesis-steel: #4a6d8c;
+            --genesis-neural: #6ba3d6;
+            --genesis-cream: #f5f0e8;
+            --genesis-white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: var(--genesis-white);
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 21, 32, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            color: var(--genesis-white);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu a {
+            color: var(--genesis-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--genesis-neural);
+        }
+        
+        .cta-nav {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white) !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 163, 214, 0.3);
+        }
+        
+        .cta-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+            color: var(--genesis-white) !important;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--genesis-navy) 0%, var(--genesis-blue) 100%);
+            padding: 8rem 2rem 6rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(107, 163, 214, 0.15) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .hero-container {
+            max-width: 800px;
+            margin: 0 auto;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--genesis-white);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: #8aa4be;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .beta-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Philosophy Section */
+        .philosophy {
+            padding: 6rem 2rem;
+            background: var(--genesis-cream);
+        }
+        
+        .philosophy-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .philosophy h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--genesis-blue);
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .philosophy p {
+            font-size: 1.15rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+        
+        .principle {
+            background: var(--genesis-white);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e5e5;
+        }
+        
+        .principle-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            font-size: 1.5rem;
+        }
+        
+        .principle h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--genesis-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .principle p {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Preview Pricing */
+        .preview-pricing {
+            padding: 6rem 2rem;
+            background: var(--genesis-white);
+        }
+        
+        .preview-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .preview-container h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--genesis-blue);
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .preview-container p {
+            font-size: 1.15rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+        
+        .pricing-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .price-card {
+            background: var(--genesis-cream);
+            border: 2px solid #e5e5e5;
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .price-card.featured {
+            border-color: var(--genesis-neural);
+            background: var(--genesis-white);
+        }
+        
+        .price-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--genesis-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--genesis-steel);
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-period {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .features li {
+            padding: 0.5rem 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .features li::before {
+            content: '✓';
+            color: var(--genesis-neural);
+            font-weight: bold;
+        }
+        
+        .coming-soon-btn {
+            background: #e0e0e0;
+            color: #888;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            cursor: not-allowed;
+        }
+        
+        .featured .coming-soon-btn {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            cursor: pointer;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--genesis-navy);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .cta-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--genesis-white);
+            margin-bottom: 2rem;
+        }
+        
+        .cta-section p {
+            font-size: 1.25rem;
+            color: #8aa4be;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1.25rem 3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .cta-primary {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            box-shadow: 0 8px 30px rgba(107, 163, 214, 0.4);
+        }
+        
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(107, 163, 214, 0.6);
+            border-color: var(--genesis-neural);
+        }
+        
+        .cta-secondary {
+            background: transparent;
+            color: var(--genesis-white);
+            border-color: var(--genesis-white);
+        }
+        
+        .cta-secondary:hover {
+            background: var(--genesis-white);
+            color: var(--genesis-navy);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .principles {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-preview {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding: 6rem 1rem 4rem 1rem;
+            }
+            
+            .philosophy {
+                padding: 4rem 1rem;
+            }
+            
+            .preview-pricing {
+                padding: 4rem 1rem;
+            }
+            
+            .cta-section {
+                padding: 4rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">G</div>
+                Genesis Legacy AI
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/pricing" class="active">Pricing</a></li>
+                    <li><a href="/room" class="cta-nav">Enter the Neural Network Room</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="beta-badge">Beta Coming Soon</div>
+            <h1>Fair Pricing</h1>
+            <p class="subtitle">
+                AI that serves you shouldn't cost a fortune. Privacy and power for everyday American families.
+            </p>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="philosophy">
+        <div class="philosophy-container">
+            <h2>Our Pricing Philosophy</h2>
+            <p>
+                We believe advanced AI should be accessible to families, not just corporations. 
+                Our pricing reflects our values: transparent, fair, and designed for real people.
+            </p>
+            <p>
+                No hidden fees. No data harvesting to subsidize costs. No corporate surveillance to pad profits.
+            </p>
+            
+            <div class="principles">
+                <div class="principle">
+                    <div class="principle-icon">💰</div>
+                    <h3>Transparent</h3>
+                    <p>Clear pricing with no hidden fees or surprise charges. What you see is what you pay.</p>
+                </div>
+                
+                <div class="principle">
+                    <div class="principle-icon">👨‍👩‍👧‍👦</div>
+                    <h3>Family-Focused</h3>
+                    <p>Designed for household budgets, not enterprise contracts. AI power for families.</p>
+                </div>
+                
+                <div class="principle">
+                    <div class="principle-icon">🔒</div>
+                    <h3>Privacy-Funded</h3>
+                    <p>You pay us directly, so we never need to sell your data to make money.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Pricing Section -->
+    <section class="preview-pricing">
+        <div class="preview-container">
+            <h2>Expected Pricing Tiers</h2>
+            <p>
+                These are our planned pricing tiers for the beta launch. 
+                Final pricing may vary based on beta feedback.
+            </p>
+            
+            <div class="pricing-preview">
+                <div class="price-card">
+                    <h3>Genesis Connect</h3>
+                    <div class="price">Free</div>
+                    <div class="price-period">Always</div>
+                    <ul class="features">
+                        <li>Basic AI assistance</li>
+                        <li>2 active agents</li>
+                        <li>15-minute sessions</li>
+                        <li>Local processing</li>
+                    </ul>
+                    <button class="coming-soon-btn">Coming Soon</button>
+                </div>
+                
+                <div class="price-card featured">
+                    <h3>Genesis Family</h3>
+                    <div class="price">$49</div>
+                    <div class="price-period">per month</div>
+                    <ul class="features">
+                        <li>All 9 AI agents</li>
+                        <li>Unlimited sessions</li>
+                        <li>Premium voice synthesis</li>
+                        <li>Family memory sharing</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <button class="coming-soon-btn">Beta Access</button>
+                </div>
+                
+                <div class="price-card">
+                    <h3>Genesis Estate</h3>
+                    <div class="price">$149</div>
+                    <div class="price-period">per month</div>
+                    <ul class="features">
+                        <li>Everything in Family</li>
+                        <li>Advanced analytics</li>
+                        <li>Custom memory training</li>
+                        <li>Legacy preservation</li>
+                        <li>White-glove onboarding</li>
+                    </ul>
+                    <button class="coming-soon-btn">Coming Soon</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Try Genesis AI Today</h2>
+            <p>
+                Experience the future of privacy-first AI while we finalize our pricing. 
+                Beta testers get exclusive early access and pricing protection.
+            </p>
+            <div class="cta-buttons">
+                <a href="/room" class="cta-button cta-primary">Enter the Neural Network Room</a>
+                <a href="mailto:beta@genesislegacyai.com" class="cta-button cta-secondary">Request Beta Access</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Header scroll behavior
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

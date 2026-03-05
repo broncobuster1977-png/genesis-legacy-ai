@@ -3,9 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genesis Legacy AI - Command Center</title>
+    <title>Genesis Legacy AI - The AI That Knows You</title>
+    <meta name="description" content="Your personal AI that remembers everything, shares nothing, and gets smarter every day — without ever selling your data.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        :root {
+            /* Genesis Brand Colors */
+            --genesis-navy: #0d1520;
+            --genesis-blue: #1a2744;
+            --genesis-steel: #4a6d8c;
+            --genesis-neural: #6ba3d6;
+            --genesis-cream: #f5f0e8;
+            --genesis-white: #ffffff;
+        }
         
         * {
             margin: 0;
@@ -13,784 +26,445 @@
             box-sizing: border-box;
         }
         
-        :root {
-            --genesis-navy: #1B3A5C;
-            --genesis-blue: #2E75B6;
-            --genesis-sky: #4A90E2;
-            --genesis-accent: #6BB6FF;
-            --genesis-dark: #0F1419;
-            --genesis-darker: #0A0E13;
-            --genesis-panel: #1A1F2E;
-            --genesis-border: #2A3441;
-            --genesis-text-primary: #F8FAFC;
-            --genesis-text-secondary: #94A3B8;
-            --genesis-text-muted: #64748B;
-            --genesis-success: #10B981;
-            --genesis-warning: #F59E0B;
-            --genesis-error: #EF4444;
-        }
-        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--genesis-darker) 0%, var(--genesis-dark) 100%);
-            color: var(--genesis-text-primary);
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
+            line-height: 1.6;
+            color: #333333;
+            background-color: var(--genesis-white);
+            overflow-x: hidden;
         }
         
-        /* Subtle background pattern */
-        body::before {
-            content: '';
+        /* Header Styles */
+        .header {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(46, 117, 182, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(74, 144, 226, 0.06) 0%, transparent 50%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        /* Main container */
-        .command-center {
-            display: grid;
-            grid-template-columns: 80px 1fr;
-            grid-template-rows: 1fr 80px;
-            height: 100vh;
-            gap: 0;
-        }
-        
-        /* Left Sidebar - Agent Selection */
-        .agent-sidebar {
-            background: var(--genesis-panel);
-            border-right: 1px solid var(--genesis-border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            grid-row: span 2;
-        }
-        
-        .genesis-logo-mini {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--genesis-blue) 0%, var(--genesis-sky) 100%);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 16px;
-            color: white;
-        }
-        
-        .agents-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 10px;
-        }
-        
-        .agent-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            background: var(--genesis-darker);
-            border: 2px solid var(--genesis-border);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 18px;
+            right: 0;
+            background: rgba(13, 21, 32, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
             transition: all 0.3s ease;
+        }
+        
+        .header.scrolled {
+            background: rgba(13, 21, 32, 0.98);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            color: var(--genesis-white);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu a {
+            color: var(--genesis-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--genesis-neural);
+        }
+        
+        .cta-nav {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white) !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 163, 214, 0.3);
+        }
+        
+        .cta-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+            color: var(--genesis-white) !important;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: var(--genesis-navy);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem 2rem;
             position: relative;
             overflow: hidden;
         }
         
-        .agent-avatar:hover {
-            border-color: var(--genesis-blue);
-            transform: translateY(-2px);
-        }
-        
-        .agent-avatar.active {
-            border-color: var(--genesis-accent);
-            background: linear-gradient(135deg, var(--genesis-blue) 0%, var(--genesis-sky) 100%);
-            box-shadow: 0 0 20px rgba(107, 182, 255, 0.3);
-        }
-        
-        .agent-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        
-        /* Status indicator */
-        .agent-avatar::after {
+        .hero::before {
             content: '';
             position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 12px;
-            height: 12px;
-            background: var(--genesis-success);
-            border-radius: 50%;
-            border: 2px solid var(--genesis-panel);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(107, 163, 214, 0.1) 0%, transparent 70%);
+            z-index: 1;
         }
         
-        /* Center Stage */
-        .center-stage {
-            background: var(--genesis-dark);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        .hero-content {
+            max-width: 1200px;
+            z-index: 2;
             position: relative;
         }
         
-        /* Genesis Header */
-        .genesis-header {
-            background: var(--genesis-panel);
-            border-bottom: 1px solid var(--genesis-border);
-            padding: 24px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-        }
-        
-        .genesis-emblem {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .genesis-logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--genesis-blue) 0%, var(--genesis-sky) 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 24px;
-            color: white;
-            box-shadow: 0 8px 32px rgba(46, 117, 182, 0.3);
-        }
-        
-        .genesis-title {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--genesis-text-primary);
-            letter-spacing: -0.5px;
-        }
-        
-        .genesis-subtitle {
-            font-size: 14px;
-            color: var(--genesis-text-secondary);
-            margin-top: 4px;
-            font-weight: 500;
-        }
-        
-        /* Content Area */
-        .content-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Intro Video Container */
-        .intro-video-container {
+        .hero-image {
             width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--genesis-darker);
-            border-radius: 16px;
-            margin: 40px;
-            border: 1px solid var(--genesis-border);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .intro-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 15px;
-        }
-        
-        .video-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            text-align: center;
-            color: var(--genesis-text-secondary);
-        }
-        
-        .video-play-button {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--genesis-blue) 0%, var(--genesis-sky) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(46, 117, 182, 0.4);
-        }
-        
-        .video-play-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 40px rgba(46, 117, 182, 0.6);
-        }
-        
-        .video-play-button::after {
-            content: '▶';
-            color: white;
-            font-size: 28px;
-            margin-left: 4px;
-        }
-        
-        /* Active Session Area */
-        .active-session {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            margin: 40px;
-        }
-        
-        .active-session.show {
-            display: flex;
-        }
-        
-        .agent-info {
-            background: var(--genesis-panel);
-            border: 1px solid var(--genesis-border);
+            max-width: 800px;
+            height: auto;
+            margin-bottom: 3rem;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         
-        .active-agent-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--genesis-blue) 0%, var(--genesis-sky) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 20px;
-            color: white;
-        }
-        
-        .agent-details h3 {
-            font-size: 18px;
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
             font-weight: 700;
-            margin-bottom: 4px;
+            color: var(--genesis-white);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            line-height: 1.1;
         }
         
-        .agent-details p {
-            color: var(--genesis-text-secondary);
-            font-size: 14px;
-        }
-        
-        .conversation-area {
-            flex: 1;
-            background: var(--genesis-darker);
-            border: 1px solid var(--genesis-border);
-            border-radius: 12px;
-            padding: 24px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-        
-        .message.user {
-            background: var(--genesis-blue);
-            color: white;
-            align-self: flex-end;
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #8aa4be;
+            margin-bottom: 3rem;
+            max-width: 700px;
             margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+            line-height: 1.6;
         }
         
-        .message.agent {
-            background: var(--genesis-panel);
-            border: 1px solid var(--genesis-border);
-            align-self: flex-start;
-        }
-        
-        /* Bottom Toolbar */
-        .bottom-toolbar {
-            background: var(--genesis-panel);
-            border-top: 1px solid var(--genesis-border);
-            padding: 16px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            grid-column: span 2;
-        }
-        
-        .toolbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .mode-selector {
-            display: flex;
-            background: var(--genesis-darker);
-            border-radius: 8px;
-            padding: 4px;
-            border: 1px solid var(--genesis-border);
-        }
-        
-        .mode-button {
-            padding: 8px 16px;
-            background: none;
-            border: none;
-            color: var(--genesis-text-secondary);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        .mode-button:hover {
-            color: var(--genesis-text-primary);
-        }
-        
-        .mode-button.active {
-            background: var(--genesis-blue);
-            color: white;
-        }
-        
-        .toolbar-center {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .control-button {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid var(--genesis-border);
-            background: var(--genesis-darker);
-            color: var(--genesis-text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.2s ease;
-        }
-        
-        .control-button:hover {
-            border-color: var(--genesis-blue);
-            transform: translateY(-1px);
-        }
-        
-        .control-button.active {
-            background: var(--genesis-blue);
-            border-color: var(--genesis-blue);
-        }
-        
-        .control-button.mute.active {
-            background: var(--genesis-error);
-            border-color: var(--genesis-error);
-        }
-        
-        .toolbar-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .session-info {
-            color: var(--genesis-text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .end-session {
-            padding: 10px 20px;
-            background: var(--genesis-error);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .end-session:hover {
-            background: #DC2626;
-            transform: translateY(-1px);
-        }
-        
-        /* Investor Mode - Pitch Deck Display */
-        .pitch-deck {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            margin: 20px;
-        }
-        
-        .pitch-deck.show {
-            display: flex;
-        }
-        
-        .slide-container {
-            flex: 1;
-            background: white;
+        .hero-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            padding: 1.25rem 3rem;
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--genesis-dark);
-            font-size: 18px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
             font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(107, 163, 214, 0.4);
+            border: 2px solid transparent;
+        }
+        
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(107, 163, 214, 0.6);
+            border-color: var(--genesis-neural);
+        }
+        
+        /* Three Images Section */
+        .three-images {
+            background: var(--genesis-cream);
+            padding: 6rem 2rem;
+        }
+        
+        .three-images-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .image-column {
+            text-align: center;
+        }
+        
+        .story-image {
+            width: 100%;
+            max-width: 350px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .story-image:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .story-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--genesis-blue);
+            letter-spacing: 0.5px;
         }
         
         /* Responsive Design */
-        @media (max-width: 1024px) {
-            .command-center {
-                grid-template-columns: 70px 1fr;
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
             }
             
-            .agent-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 16px;
+            .hero h1 {
+                font-size: 2.5rem;
             }
             
-            .genesis-header {
-                padding: 20px 30px;
+            .hero-subtitle {
+                font-size: 1.1rem;
             }
             
-            .genesis-title {
-                font-size: 28px;
+            .hero-cta {
+                padding: 1rem 2rem;
+                font-size: 1rem;
             }
             
-            .intro-video-container,
-            .active-session {
-                margin: 30px;
+            .three-images-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .story-image {
+                max-width: 100%;
+                height: 250px;
+            }
+            
+            .story-label {
+                font-size: 1.25rem;
             }
         }
         
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @media (max-width: 480px) {
+            .hero {
+                padding: 5rem 1rem 3rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .three-images {
+                padding: 4rem 1rem;
+            }
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--genesis-white);
+            opacity: 0.6;
+            animation: bounce 2s infinite;
         }
         
-        /* Custom scrollbar for conversation area */
-        .conversation-area::-webkit-scrollbar {
-            width: 6px;
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
         }
         
-        .conversation-area::-webkit-scrollbar-track {
-            background: var(--genesis-darker);
+        /* Loading states for images */
+        .hero-image, .story-image {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
         }
         
-        .conversation-area::-webkit-scrollbar-thumb {
-            background: var(--genesis-border);
-            border-radius: 3px;
+        .hero-image.loaded, .story-image.loaded {
+            animation: none;
+            background: none;
         }
         
-        .conversation-area::-webkit-scrollbar-thumb:hover {
-            background: var(--genesis-blue);
+        @keyframes loading {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        /* Header scroll behavior */
+        .header-spacer {
+            height: 80px;
         }
     </style>
 </head>
 <body>
-    <div class="command-center">
-        <!-- Left Sidebar - Agent Selection -->
-        <div class="agent-sidebar">
-            <div class="genesis-logo-mini">G</div>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">G</div>
+                Genesis Legacy AI
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/room" class="cta-nav">Enter the Neural Network Room</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <!-- Hero Image: IMG_9087.jpeg - Brain → neural network → family protected -->
+            <img src="/assets/images/IMG_9087.jpeg" alt="AI neural network protecting family" class="hero-image" id="heroImage">
             
-            <div class="agents-list">
-                <!-- Agent Avatars - Replace with actual images when available -->
-                <div class="agent-avatar active" data-agent="jarvis" title="JARVIS - Strategic Command">
-                    <img src="images/jarvis-avatar.jpg" alt="JARVIS" onerror="this.style.display='none'; this.parentNode.innerHTML='JR';">
-                </div>
-                <div class="agent-avatar" data-agent="atlas" title="Atlas - Technical Director">
-                    <img src="images/atlas-avatar.jpg" alt="Atlas" onerror="this.style.display='none'; this.parentNode.innerHTML='AT';">
-                </div>
-                <div class="agent-avatar" data-agent="demi" title="Demi Voss - Creative Director">
-                    <img src="images/demi-avatar.jpg" alt="Demi" onerror="this.style.display='none'; this.parentNode.innerHTML='DV';">
-                </div>
-                <div class="agent-avatar" data-agent="scout" title="Scout - Intelligence Analyst">
-                    <img src="images/scout-avatar.jpg" alt="Scout" onerror="this.style.display='none'; this.parentNode.innerHTML='SC';">
-                </div>
-                <div class="agent-avatar" data-agent="vic" title="Vic Santoro - Business Strategy">
-                    <img src="images/vic-avatar.jpg" alt="Vic" onerror="this.style.display='none'; this.parentNode.innerHTML='VS';">
-                </div>
-                <div class="agent-avatar" data-agent="sean" title="Sean Pierce - Legal Counsel">
-                    <img src="images/sean-avatar.jpg" alt="Sean" onerror="this.style.display='none'; this.parentNode.innerHTML='SP';">
-                </div>
-                <div class="agent-avatar" data-agent="phoenix" title="Phoenix - System Monitor">
-                    <img src="images/phoenix-avatar.jpg" alt="Phoenix" onerror="this.style.display='none'; this.parentNode.innerHTML='PX';">
-                </div>
-                <div class="agent-avatar" data-agent="amy" title="Amy Mason - Executive Assistant">
-                    <img src="images/amy-avatar.jpg" alt="Amy" onerror="this.style.display='none'; this.parentNode.innerHTML='AM';">
-                </div>
-                <div class="agent-avatar" data-agent="rescue" title="Rescue - Emergency Response">
-                    <img src="images/rescue-avatar.jpg" alt="Rescue" onerror="this.style.display='none'; this.parentNode.innerHTML='RC';">
-                </div>
-            </div>
+            <h1>The AI That Knows You</h1>
+            
+            <p class="hero-subtitle">
+                Your personal AI that remembers everything, shares nothing, and gets smarter every day — without ever selling your data.
+            </p>
+            
+            <a href="/room" class="hero-cta">Enter the Neural Network Room</a>
         </div>
         
-        <!-- Center Stage -->
-        <div class="center-stage">
-            <!-- Genesis Header -->
-            <div class="genesis-header">
-                <div class="genesis-emblem">
-                    <div class="genesis-logo">G</div>
-                    <div>
-                        <div class="genesis-title">Genesis Legacy AI</div>
-                        <div class="genesis-subtitle">Privacy-First Intelligence Platform</div>
-                    </div>
-                </div>
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Three Images Section -->
+    <section class="three-images">
+        <div class="three-images-container">
+            <div class="image-column">
+                <!-- IMG_8905.jpeg - Person at kitchen table, AI managing everyday life -->
+                <img src="/assets/images/IMG_8905.jpeg" alt="AI managing everyday American life" class="story-image">
+                <h2 class="story-label">Everyday Life</h2>
             </div>
             
-            <!-- Content Area -->
-            <div class="content-area">
-                <!-- Intro Video (shown on first load) -->
-                <div class="intro-video-container" id="introContainer">
-                    <div class="video-placeholder">
-                        <div class="video-play-button" onclick="playIntroVideo()"></div>
-                        <div>
-                            <h3 style="margin-bottom: 8px; color: var(--genesis-text-primary);">Genesis Legacy AI</h3>
-                            <p>Click to watch our 60-second introduction</p>
-                            <p style="font-size: 13px; margin-top: 8px;">Meet our agents and discover the future of privacy-first AI</p>
-                        </div>
-                    </div>
-                    <!-- Video element - hidden until played -->
-                    <video class="intro-video" id="introVideo" style="display: none;" controls>
-                        <source src="videos/genesis-intro.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                
-                <!-- Active Session (shown after video or agent selection) -->
-                <div class="active-session" id="activeSession">
-                    <div class="agent-info">
-                        <div class="active-agent-avatar" id="activeAgentAvatar">JR</div>
-                        <div class="agent-details">
-                            <h3 id="activeAgentName">JARVIS</h3>
-                            <p id="activeAgentRole">Strategic Command & Coordination</p>
-                        </div>
-                    </div>
-                    <div class="conversation-area" id="conversationArea">
-                        <div class="message agent">
-                            Hello! I'm your Genesis AI assistant. How can I help you today?
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Pitch Deck (shown in investor mode) -->
-                <div class="pitch-deck" id="pitchDeck">
-                    <div class="slide-container">
-                        <div>Investor Presentation Mode - Slide Content Here</div>
-                    </div>
-                </div>
+            <div class="image-column">
+                <!-- IMG_8908.jpeg - Multi-gen family connected to AI tablet in living room -->
+                <img src="/assets/images/IMG_8908.jpeg" alt="Multi-generational family using AI" class="story-image">
+                <h2 class="story-label">Your Family</h2>
+            </div>
+            
+            <div class="image-column">
+                <!-- IMG_8898.jpeg - Business team with Genesis shield hologram -->
+                <img src="/assets/images/IMG_8898.jpeg" alt="Business team with Genesis AI" class="story-image">
+                <h2 class="story-label">Your Business</h2>
             </div>
         </div>
-        
-        <!-- Bottom Toolbar -->
-        <div class="bottom-toolbar">
-            <div class="toolbar-left">
-                <div class="mode-selector">
-                    <button class="mode-button active" data-mode="direct" onclick="switchMode('direct')">Direct</button>
-                    <button class="mode-button" data-mode="meeting" onclick="switchMode('meeting')">Meeting</button>
-                    <button class="mode-button" data-mode="briefing" onclick="switchMode('briefing')">Briefing</button>
-                </div>
-            </div>
-            
-            <div class="toolbar-center">
-                <button class="control-button mute" id="muteBtn" onclick="toggleMute()" title="Mute/Unmute">
-                    🎤
-                </button>
-                <button class="control-button" onclick="openSettings()" title="Settings">
-                    ⚙️
-                </button>
-            </div>
-            
-            <div class="toolbar-right">
-                <div class="session-info">
-                    <span id="sessionTimer">00:00</span>
-                </div>
-                <button class="end-session" onclick="endSession()">End Session</button>
-            </div>
-        </div>
-    </div>
+    </section>
 
     <script>
-        // Agent selection functionality
-        const agents = {
-            jarvis: { name: 'JARVIS', role: 'Strategic Command & Coordination', initials: 'JR' },
-            atlas: { name: 'Atlas', role: 'Technical Director & Infrastructure', initials: 'AT' },
-            demi: { name: 'Demi Voss', role: 'Creative Director & Design', initials: 'DV' },
-            scout: { name: 'Scout', role: 'Intelligence Analyst & Research', initials: 'SC' },
-            vic: { name: 'Vic Santoro', role: 'Business Strategy & Operations', initials: 'VS' },
-            sean: { name: 'Sean Pierce', role: 'Legal Counsel & Compliance', initials: 'SP' },
-            phoenix: { name: 'Phoenix', role: 'System Monitor & Accountability', initials: 'PX' },
-            amy: { name: 'Amy Mason', role: 'Executive Assistant & Coordination', initials: 'AM' },
-            rescue: { name: 'Rescue', role: 'Emergency Response & Crisis Management', initials: 'RC' }
-        };
-        
-        let currentAgent = 'jarvis';
-        let currentMode = 'direct';
-        let sessionStartTime = Date.now();
-        let isMuted = false;
-        
-        // Agent selection
-        document.querySelectorAll('.agent-avatar').forEach(avatar => {
-            avatar.addEventListener('click', function() {
-                const agentId = this.getAttribute('data-agent');
-                selectAgent(agentId);
-            });
+        // Header scroll behavior
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
-        
-        function selectAgent(agentId) {
-            // Update active agent in sidebar
-            document.querySelectorAll('.agent-avatar').forEach(a => a.classList.remove('active'));
-            document.querySelector(`[data-agent="${agentId}"]`).classList.add('active');
-            
-            // Update active agent info
-            const agent = agents[agentId];
-            document.getElementById('activeAgentName').textContent = agent.name;
-            document.getElementById('activeAgentRole').textContent = agent.role;
-            document.getElementById('activeAgentAvatar').textContent = agent.initials;
-            
-            // Show active session if intro video is done
-            if (document.getElementById('introContainer').style.display === 'none') {
-                showActiveSession();
-            }
-            
-            currentAgent = agentId;
+
+        // Image loading handlers
+        function handleImageLoad(img) {
+            img.classList.add('loaded');
         }
-        
-        // Mode switching
-        function switchMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
-            
-            // Handle different modes
-            if (mode === 'briefing') {
-                // Show pitch deck for investor briefings
-                document.getElementById('activeSession').classList.remove('show');
-                document.getElementById('pitchDeck').classList.add('show');
-            } else {
-                // Show regular conversation interface
-                document.getElementById('pitchDeck').classList.remove('show');
-                document.getElementById('activeSession').classList.add('show');
-            }
+
+        function handleImageError(img, fallbackText) {
+            img.style.background = 'linear-gradient(135deg, var(--genesis-steel) 0%, var(--genesis-neural) 100%)';
+            img.style.color = 'white';
+            img.style.display = 'flex';
+            img.style.alignItems = 'center';
+            img.style.justifyContent = 'center';
+            img.style.fontSize = '1.2rem';
+            img.style.fontWeight = '600';
+            img.innerHTML = fallbackText;
+            img.classList.add('loaded');
         }
-        
-        // Video functionality
-        function playIntroVideo() {
-            const placeholder = document.querySelector('.video-placeholder');
-            const video = document.getElementById('introVideo');
-            
-            placeholder.style.display = 'none';
-            video.style.display = 'block';
-            video.play();
-            
-            // When video ends, show active session
-            video.addEventListener('ended', function() {
-                document.getElementById('introContainer').style.display = 'none';
-                showActiveSession();
-            });
-        }
-        
-        function showActiveSession() {
-            document.getElementById('activeSession').classList.add('show');
-            document.getElementById('activeSession').classList.add('fade-in');
-        }
-        
-        // Control functions
-        function toggleMute() {
-            isMuted = !isMuted;
-            const muteBtn = document.getElementById('muteBtn');
-            
-            if (isMuted) {
-                muteBtn.classList.add('active');
-                muteBtn.innerHTML = '🔇';
-            } else {
-                muteBtn.classList.remove('active');
-                muteBtn.innerHTML = '🎤';
-            }
-        }
-        
-        function openSettings() {
-            // Settings functionality
-            alert('Settings panel would open here');
-        }
-        
-        function endSession() {
-            if (confirm('Are you sure you want to end this session?')) {
-                // End session functionality
-                window.location.reload();
-            }
-        }
-        
-        // Session timer
-        function updateSessionTimer() {
-            const elapsed = Date.now() - sessionStartTime;
-            const minutes = Math.floor(elapsed / 60000);
-            const seconds = Math.floor((elapsed % 60000) / 1000);
-            document.getElementById('sessionTimer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        
-        setInterval(updateSessionTimer, 1000);
-        
-        // Initialize
+
+        // Setup image event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            selectAgent('jarvis');
+            const heroImage = document.getElementById('heroImage');
+            const storyImages = document.querySelectorAll('.story-image');
+            
+            heroImage.onload = () => handleImageLoad(heroImage);
+            heroImage.onerror = () => handleImageError(heroImage, 'AI Neural Network<br>Family Protection');
+            
+            storyImages.forEach((img, index) => {
+                const labels = ['Everyday AI', 'Family AI', 'Business AI'];
+                img.onload = () => handleImageLoad(img);
+                img.onerror = () => handleImageError(img, labels[index]);
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
         });
     </script>
-    
-    <!-- Simple Speech Recognition -->
-    <script src="js/simple-speech.js"></script>
-    
-    <!-- Voice Integration -->
-    <script src="js/voice-integration.js"></script>
 </body>
 </html>
