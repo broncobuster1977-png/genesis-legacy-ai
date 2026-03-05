@@ -97,66 +97,71 @@ class GenesisVoiceSystem {
     }
     
     async connectToAgent(agentName) {
-        console.log(`🔗 Connecting to agent: ${agentName}...`);
+        console.log(`=== VOICE CONNECTION ATTEMPT ===`);
+        console.log(`🔗 Connecting to agent: ${agentName}`);
         
         // Prevent multiple simultaneous connections
         if (this.isConnecting) {
-            console.log('Already connecting, ignoring duplicate click');
+            console.log('❌ Already connecting, ignoring duplicate click');
             return;
         }
         
         try {
             this.isConnecting = true;
-            
-            // Disconnect from current agent if connected
-            if (this.isConnected) {
-                await this.disconnect();
-            }
-            
             this.currentAgent = agentName;
             
-            console.log(`📞 Initiating voice connection to ${agentName}...`);
+            console.log(`📞 Setting status to connecting for ${agentName}`);
             this.updateAgentStatus(agentName, 'connecting');
             
             // Clear any existing status messages
             this.clearStatusMessages();
-            this.showStatusMessage(`📱 Connecting to ${agentName}...`, 'info');
+            this.showStatusMessage(`📱 Testing microphone for ${agentName}...`, 'info');
             
-            // Request microphone permission 
-            console.log('Requesting microphone permission...');
+            // Request microphone permission using PROVEN method
+            console.log('🎤 Starting microphone permission request (same as test page)...');
             const micGranted = await this.requestMicrophonePermission();
+            console.log(`🎤 Microphone result: ${micGranted ? 'GRANTED ✅' : 'DENIED ❌'}`);
             
             if (micGranted) {
-                console.log(`✅ Voice channel established with ${agentName}`);
+                console.log(`🎉 SUCCESS! Voice channel ready for ${agentName}`);
                 this.isConnected = true;
                 this.isConnecting = false;
                 this.updateAgentStatus(agentName, 'connected');
-                this.showVoiceInterface(agentName);
                 
-                // Clear connecting message and show success
+                // Clear messages and show success
                 this.clearStatusMessages();
-                this.showStatusMessage(`✅ Connected to ${agentName}`, 'success');
+                this.showStatusMessage(`✅ Connected to ${agentName} - Voice Ready!`, 'success');
+                
+                // Show voice controls
+                this.showVoiceInterface(agentName);
                 
                 // Show agent response after a moment
                 setTimeout(() => {
+                    console.log(`🤖 Showing ${agentName} response`);
                     this.simulateAgentResponse(agentName);
                 }, 1500);
                 
+                console.log(`=== CONNECTION SUCCESS ===`);
+                
             } else {
                 // Permission denied - reset status
-                console.log('❌ Microphone permission denied');
+                console.log('❌ MICROPHONE PERMISSION DENIED');
                 this.isConnecting = false;
                 this.updateAgentStatus(agentName, 'active');
                 this.clearStatusMessages();
-                this.showStatusMessage('🎤 Microphone permission needed for voice chat', 'warning');
+                this.showStatusMessage('🎤 Microphone permission needed for voice chat. Please allow and try again.', 'warning');
+                console.log(`=== CONNECTION FAILED - NO MIC ===`);
             }
             
         } catch (error) {
-            console.error('❌ Voice connection failed:', error);
+            console.error('❌ Voice connection failed with error:', error);
             this.isConnecting = false;
-            this.updateAgentStatus(agentName, 'active');
+            if (this.currentAgent) {
+                this.updateAgentStatus(this.currentAgent, 'active');
+            }
             this.clearStatusMessages();
             this.showErrorMessage(`Connection failed: ${error.message}`);
+            console.log(`=== CONNECTION FAILED - ERROR ===`);
         }
     }
     
@@ -168,39 +173,50 @@ class GenesisVoiceSystem {
     
     async requestMicrophonePermission() {
         try {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            console.log('🎤 Requesting microphone permission (using proven approach)...');
             
-            console.log(`🎤 Requesting microphone permission... (iOS: ${isIOS})`);
-            
-            // Simple, reliable microphone request
+            // Use EXACT same approach as successful test page
             const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: true,
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true
+                },
                 video: false 
             });
             
-            console.log('✅ Microphone access granted');
+            console.log('✅ Microphone access granted!');
             
-            // Get basic info about the audio stream
+            // Get audio track info (same as test page)
             const audioTracks = stream.getAudioTracks();
-            console.log(`Audio tracks: ${audioTracks.length}`);
+            const trackInfo = audioTracks.length > 0 ? audioTracks[0] : null;
             
-            // Clean up the test stream immediately
+            console.log(`Audio tracks: ${audioTracks.length}`);
+            if (trackInfo) {
+                console.log(`Device: ${trackInfo.label || 'Default microphone'}`);
+                console.log(`State: ${trackInfo.readyState}`);
+                console.log(`Enabled: ${trackInfo.enabled}`);
+            }
+            
+            // Clean up the test stream (same as test page)
             stream.getTracks().forEach(track => track.stop());
             
             return true;
             
         } catch (error) {
-            console.error('❌ Microphone access error:', error);
+            console.error('❌ Microphone test failed:', error);
             
-            let errorMessage = 'Microphone permission needed for voice chat.';
+            let errorMessage = '❌ Microphone test failed: ';
+            errorMessage += `${error.name} - ${error.message}`;
             
             if (error.name === 'NotAllowedError') {
-                errorMessage = 'Please tap "Allow" when your browser asks for microphone permission.';
+                errorMessage = '📱 iPhone Users: Look for the microphone icon in Safari address bar and tap "Allow", or go to Settings > Safari > Camera & Microphone > Allow';
             } else if (error.name === 'NotFoundError') {
-                errorMessage = 'No microphone found. Please check your device settings.';
+                errorMessage = 'No microphone found on this device.';
+            } else if (error.name === 'NotReadableError') {
+                errorMessage = 'Microphone is being used by another app. Close other apps and try again.';
             }
             
-            console.log('Microphone error details:', error.name, error.message);
+            console.error('Full error details:', error);
             return false;
         }
     }
