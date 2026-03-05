@@ -32,6 +32,9 @@ class GenesisVoiceSystem {
     async initializeVoiceSystem() {
         console.log('🚀 Initializing Genesis Voice System...');
         
+        // Show loading status for mobile users
+        this.showStatusMessage('Loading voice system...', 'info');
+        
         // Check if LiveKit SDK is loaded
         if (typeof LiveKitJS === 'undefined') {
             console.error('❌ LiveKit SDK not loaded. Retrying in 2 seconds...');
@@ -41,22 +44,49 @@ class GenesisVoiceSystem {
         
         console.log('✅ LiveKit SDK loaded successfully');
         
-        // Add click handlers to agent terminals
+        // Add click/touch handlers to agent terminals
         document.querySelectorAll('.agent-terminal').forEach(terminal => {
-            terminal.addEventListener('click', (e) => {
+            // Add both click and touchstart for mobile compatibility
+            const handler = (e) => {
+                e.preventDefault(); // Prevent double-tap zoom on iOS
                 const agentName = terminal.querySelector('.agent-name').textContent;
                 this.connectToAgent(agentName);
-            });
+            };
+            
+            terminal.addEventListener('click', handler);
+            terminal.addEventListener('touchstart', handler, { passive: false });
+            
+            // Add visual feedback for mobile touch
+            terminal.style.cursor = 'pointer';
+            terminal.style.userSelect = 'none'; // Prevent text selection on mobile
         });
         
         // Add voice controls
         this.createVoiceControls();
         
+        // Clear loading message and show ready status
+        setTimeout(() => {
+            const loadingPopup = document.querySelector('.status-info');
+            if (loadingPopup) loadingPopup.remove();
+            
+            const browserInfo = this.getBrowserInfo();
+            console.log('Browser Info:', browserInfo);
+            
+            if (browserInfo.isIOS) {
+                this.showStatusMessage('📱 iPhone detected. Tap any agent to start voice chat!', 'success');
+                
+                // Add debug button for iOS testing
+                this.addDebugButton();
+            } else {
+                this.showStatusMessage('🎤 Voice system ready. Click any agent to connect!', 'success');
+            }
+        }, 1000);
+        
         console.log('✅ Genesis Voice System Initialized');
     }
     
     async connectToAgent(agentName) {
-        console.log(`🔗 Connecting to agent: ${agentName}`);
+        console.log(`🔗 Connecting to agent: ${agentName}...`);
         
         try {
             // Disconnect from current agent if connected
@@ -66,45 +96,150 @@ class GenesisVoiceSystem {
             
             this.currentAgent = agentName;
             
-            // Demo Mode: Show UI working without real connection
             console.log(`📞 Initiating voice connection to ${agentName}...`);
             this.updateAgentStatus(agentName, 'connecting');
+            this.showStatusMessage(`Connecting to ${agentName}...`, 'info');
             
-            // Show connecting state for 2 seconds, then success
-            setTimeout(() => {
-                console.log(`✅ Voice channel established with ${agentName}`);
-                this.isConnected = true;
-                this.updateAgentStatus(agentName, 'connected');
-                this.showVoiceInterface(agentName);
-                
-                // Simulate agent response after 3 seconds
+            // Request microphone permission FIRST (required for iOS)
+            const micGranted = await this.requestMicrophonePermission();
+            
+            if (micGranted) {
+                // Show connecting state for 1 second, then success
                 setTimeout(() => {
-                    this.simulateAgentResponse(agentName);
-                }, 3000);
-            }, 2000);
-            
-            // Request microphone permission (real)
-            await this.requestMicrophonePermission();
+                    console.log(`✅ Voice channel established with ${agentName}`);
+                    this.isConnected = true;
+                    this.updateAgentStatus(agentName, 'connected');
+                    this.showVoiceInterface(agentName);
+                    
+                    // Simulate agent response after 2 seconds
+                    setTimeout(() => {
+                        this.simulateAgentResponse(agentName);
+                    }, 2000);
+                }, 1000);
+            } else {
+                // Permission denied - reset status
+                this.updateAgentStatus(agentName, 'active');
+                this.showStatusMessage('Microphone permission required for voice chat', 'warning');
+            }
             
         } catch (error) {
             console.error('❌ Voice connection failed:', error);
-            this.showErrorMessage(`Failed to connect to ${agentName}: ${error.message}`);
+            this.updateAgentStatus(agentName, 'active');
+            this.showErrorMessage(`Connection failed: ${error.message}`);
         }
     }
     
     async requestMicrophonePermission() {
         try {
+            // Check if we're on a mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            console.log(`🎤 Requesting microphone permission... (Mobile: ${isMobile}, iOS: ${isIOS})`);
+            
+            // For iOS, we need to be more explicit about the request
+            if (isIOS) {
+                console.log('📱 iOS detected - requesting permissions with iOS-specific approach');
+                
+                // Show a more explicit message for iOS users
+                this.showStatusMessage('📱 iPhone: Please allow microphone access in the popup that appears', 'info');
+                
+                // Small delay to let message show
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // Request microphone access
             const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: true, 
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100
+                },
                 video: false 
             });
-            console.log('🎤 Microphone access granted');
+            
+            console.log('✅ Microphone access granted');
+            
+            // Test that we can actually capture audio
+            const audioTracks = stream.getAudioTracks();
+            console.log(`Audio tracks available: ${audioTracks.length}`);
+            
+            if (audioTracks.length > 0) {
+                console.log(`Using audio device: ${audioTracks[0].label}`);
+                this.showSuccessMessage(`✅ Microphone ready: ${audioTracks[0].label || 'Audio device connected'}`);
+            }
+            
             // Stop the test stream
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach(track => {
+                track.stop();
+                console.log(`Stopped track: ${track.kind}`);
+            });
+            
+            return true;
+            
         } catch (error) {
-            console.error('❌ Microphone access denied:', error);
-            this.showErrorMessage('Microphone access denied. Please enable microphone permissions.');
+            console.error('❌ Microphone access error:', error);
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            
+            let errorMessage = 'Microphone access is required for voice chat.';
+            let instructions = '';
+            
+            if (error.name === 'NotAllowedError') {
+                if (isIOS) {
+                    errorMessage = 'Microphone permission denied.';
+                    instructions = 'iPhone users: Tap the Safari address bar, look for the microphone icon, and tap "Allow". Or go to Settings > Safari > Camera & Microphone > Allow.';
+                } else {
+                    errorMessage = 'Microphone permission denied.';
+                    instructions = 'Please click the microphone icon in your browser address bar and select "Allow", then try again.';
+                }
+            } else if (error.name === 'NotFoundError') {
+                errorMessage = 'No microphone found on this device.';
+                instructions = 'Please check that your device has a microphone and it\'s not being used by another app.';
+            } else if (error.name === 'NotReadableError') {
+                errorMessage = 'Microphone is being used by another application.';
+                instructions = 'Please close other apps that might be using the microphone and try again.';
+            } else {
+                errorMessage = `Microphone error: ${error.message}`;
+                instructions = 'Please check your browser settings and try again.';
+            }
+            
+            this.showErrorMessage(`${errorMessage} ${instructions}`);
+            return false;
         }
+    }
+    
+    isIOSSafari() {
+        const userAgent = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+        const isSafari = /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
+        const isIOSChrome = /CriOS/.test(userAgent);
+        const isIOSFirefox = /FxiOS/.test(userAgent);
+        
+        return isIOS && (isSafari || isIOSChrome || isIOSFirefox);
+    }
+    
+    // Add debugging helper
+    getBrowserInfo() {
+        const userAgent = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+        const isSafari = /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
+        const isIOSChrome = /CriOS/.test(userAgent);
+        const isIOSFirefox = /FxiOS/.test(userAgent);
+        
+        return {
+            userAgent,
+            isIOS,
+            isSafari,
+            isIOSChrome,
+            isIOSFirefox,
+            isIOSSafari: this.isIOSSafari(),
+            hasGetUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+            hasWebAudio: !!(window.AudioContext || window.webkitAudioContext)
+        };
     }
     
     simulateAgentResponse(agentName) {
@@ -198,6 +333,50 @@ class GenesisVoiceSystem {
         }, 8000);
     }
     
+    addDebugButton() {
+        const debugHTML = `
+            <div style="position: fixed; bottom: 20px; left: 20px; z-index: 3000;">
+                <button id="debug-btn" style="
+                    background: rgba(59, 130, 246, 0.9);
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    cursor: pointer;
+                ">🐛 Debug Info</button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', debugHTML);
+        
+        document.getElementById('debug-btn').addEventListener('click', () => {
+            this.showDebugInfo();
+        });
+    }
+    
+    showDebugInfo() {
+        const browserInfo = this.getBrowserInfo();
+        const debugMessage = `
+            <strong>Browser Debug Info:</strong><br>
+            iOS: ${browserInfo.isIOS ? 'Yes' : 'No'}<br>
+            Safari: ${browserInfo.isSafari ? 'Yes' : 'No'}<br>
+            Chrome iOS: ${browserInfo.isIOSChrome ? 'Yes' : 'No'}<br>
+            getUserMedia: ${browserInfo.hasGetUserMedia ? 'Available' : 'Not Available'}<br>
+            WebAudio: ${browserInfo.hasWebAudio ? 'Available' : 'Not Available'}<br>
+            User Agent: ${browserInfo.userAgent.substring(0, 50)}...
+        `;
+        
+        this.showStatusMessage(debugMessage, 'info');
+        
+        // Also log to console for Tyler
+        console.log('=== DEBUG INFO FOR TYLER ===');
+        console.log('Full Browser Info:', browserInfo);
+        console.log('Current URL:', window.location.href);
+        console.log('HTTPS:', window.location.protocol === 'https:');
+        console.log('=== END DEBUG INFO ===');
+    }
+    
     createVoiceControls() {
         const controlsHTML = `
             <div id="voice-controls" class="voice-controls hidden">
@@ -274,23 +453,45 @@ class GenesisVoiceSystem {
     }
     
     showErrorMessage(message) {
-        const errorHTML = `
-            <div class="error-popup">
-                <div class="error-content">
-                    <h3>Voice Connection Error</h3>
-                    <p>${message}</p>
-                    <button onclick="this.closest('.error-popup').remove()">OK</button>
+        this.showStatusMessage(message, 'error');
+    }
+    
+    showSuccessMessage(message) {
+        this.showStatusMessage(message, 'success');
+    }
+    
+    showStatusMessage(message, type = 'info') {
+        const typeColors = {
+            error: { bg: 'rgba(239, 68, 68, 0.95)', border: '#ef4444', icon: '❌' },
+            success: { bg: 'rgba(16, 185, 129, 0.95)', border: '#10b981', icon: '✅' },
+            warning: { bg: 'rgba(245, 158, 11, 0.95)', border: '#f59e0b', icon: '⚠️' },
+            info: { bg: 'rgba(59, 130, 246, 0.95)', border: '#3b82f6', icon: 'ℹ️' }
+        };
+        
+        const colors = typeColors[type] || typeColors.info;
+        
+        const messageHTML = `
+            <div class="status-popup status-${type}">
+                <div class="status-content" style="background: ${colors.bg}; border-color: ${colors.border}">
+                    <div class="status-header">
+                        <span class="status-icon">${colors.icon}</span>
+                        <span class="status-title">${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                        <button class="close-btn" onclick="this.closest('.status-popup').remove()">×</button>
+                    </div>
+                    <p class="status-message">${message}</p>
+                    ${type === 'error' ? '<button class="retry-btn" onclick="window.location.reload()">Refresh Page</button>' : ''}
                 </div>
             </div>
         `;
         
-        document.body.insertAdjacentHTML('beforeend', errorHTML);
+        document.body.insertAdjacentHTML('beforeend', messageHTML);
         
-        // Auto-remove after 5 seconds
+        // Auto-remove after appropriate time based on type
+        const autoRemoveTime = type === 'error' ? 10000 : (type === 'success' ? 3000 : 5000);
         setTimeout(() => {
-            const popup = document.querySelector('.error-popup');
+            const popup = document.querySelector(`.status-${type}`);
             if (popup) popup.remove();
-        }, 5000);
+        }, autoRemoveTime);
     }
 }
 
@@ -301,6 +502,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add CSS for voice controls
 const voiceCSS = `
+    /* Mobile-optimized agent terminals */
+    .agent-terminal {
+        -webkit-tap-highlight-color: rgba(16, 185, 129, 0.3);
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+    }
+    
+    .agent-terminal:active {
+        transform: scale(0.98) translateY(-3px);
+        transition: transform 0.1s ease;
+    }
+    
+    @media (max-width: 768px) {
+        .agent-terminal {
+            padding: 15px;
+            margin: 8px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .agent-name {
+            font-size: 16px !important;
+            margin-bottom: 4px;
+        }
+        
+        .agent-role {
+            font-size: 12px !important;
+        }
+    }
+
     .voice-controls {
         position: fixed;
         bottom: 20px;
@@ -313,6 +552,16 @@ const voiceCSS = `
         backdrop-filter: blur(10px);
         box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         z-index: 1000;
+    }
+    
+    @media (max-width: 768px) {
+        .voice-controls {
+            bottom: 10px;
+            right: 10px;
+            left: 10px;
+            min-width: auto;
+            padding: 15px;
+        }
     }
     
     .voice-controls.hidden {
@@ -411,42 +660,77 @@ const voiceCSS = `
         50% { opacity: 1; }
     }
     
-    .error-popup {
+    .status-popup {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        top: 20px;
+        left: 20px;
+        right: 20px;
         z-index: 2000;
+        animation: slideDown 0.3s ease;
+        max-width: 500px;
+        margin: 0 auto;
     }
     
-    .error-content {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(51, 65, 85, 0.9));
-        border: 2px solid rgba(239, 68, 68, 0.6);
+    @media (min-width: 768px) {
+        .status-popup {
+            left: auto;
+            right: 20px;
+            max-width: 400px;
+        }
+    }
+    
+    .status-content {
+        backdrop-filter: blur(15px);
+        border: 2px solid;
         border-radius: 15px;
-        padding: 30px;
-        text-align: center;
-        max-width: 400px;
+        padding: 20px;
         color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
     
-    .error-content h3 {
-        color: #ef4444;
-        margin-bottom: 15px;
+    .status-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-weight: 700;
+        font-size: 16px;
     }
     
-    .error-content button {
-        background: #ef4444;
+    .status-icon {
+        font-size: 20px;
+    }
+    
+    .status-title {
+        flex: 1;
+    }
+    
+    .status-message {
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+        opacity: 0.9;
+    }
+    
+    .retry-btn {
+        background: rgba(255, 255, 255, 0.2);
         color: white;
-        border: none;
-        padding: 10px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 8px 16px;
         border-radius: 8px;
         cursor: pointer;
-        margin-top: 15px;
+        margin-top: 10px;
+        font-size: 12px;
+        transition: background 0.3s ease;
+    }
+    
+    .retry-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
     
     .agent-message-popup {

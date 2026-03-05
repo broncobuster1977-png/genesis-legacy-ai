@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice System Test</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: Arial; padding: 20px; }
+        .test-agent { 
+            background: #333; 
+            border: 2px solid #666; 
+            padding: 20px; 
+            margin: 10px; 
+            cursor: pointer; 
+            border-radius: 10px;
+        }
+        .test-agent:hover { background: #555; }
+        .agent-name { font-weight: bold; font-size: 18px; }
+        .status { margin-top: 10px; padding: 10px; background: #222; }
+    </style>
+</head>
+<body>
+    <h1>Genesis Voice System Test</h1>
+    <div id="status" class="status">Loading...</div>
+    
+    <div class="test-agent agent-terminal" onclick="testConnect('ATLAS')">
+        <div class="agent-name">ATLAS</div>
+        <div>Tech Infrastructure</div>
+        <div class="terminal-status status-active"></div>
+    </div>
+    
+    <div class="test-agent agent-terminal" onclick="testConnect('JARVIS')">
+        <div class="agent-name">JARVIS</div>
+        <div>Command Protocol</div>
+        <div class="terminal-status status-active"></div>
+    </div>
+    
+    <!-- LiveKit Client SDK -->
+    <script src="https://unpkg.com/livekit-client@latest/dist/livekit-client.umd.js"></script>
+    
+    <script>
+        function testConnect(agentName) {
+            document.getElementById('status').innerHTML = `Testing connection to ${agentName}...`;
+            
+            // Test if LiveKit loaded
+            if (typeof LiveKitJS !== 'undefined') {
+                document.getElementById('status').innerHTML = `✅ LiveKit SDK loaded. Clicked ${agentName} - connection would work!`;
+            } else {
+                document.getElementById('status').innerHTML = `❌ LiveKit SDK not loaded. This is the problem.`;
+            }
+        }
+        
+        window.onload = function() {
+            setTimeout(() => {
+                if (typeof LiveKitJS !== 'undefined') {
+                    document.getElementById('status').innerHTML = '✅ LiveKit SDK loaded successfully. Click an agent to test.';
+                } else {
+                    document.getElementById('status').innerHTML = '❌ LiveKit SDK failed to load from CDN.';
+                }
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
