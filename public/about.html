@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Genesis Legacy AI - Your Second Chance</title>
+    <meta name="description" content="Break free from data farming and surveillance capitalism. Genesis Legacy AI offers a second chance at digital privacy and AI that truly serves you.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Genesis Brand Colors */
+            --genesis-navy: #0d1520;
+            --genesis-blue: #1a2744;
+            --genesis-steel: #4a6d8c;
+            --genesis-neural: #6ba3d6;
+            --genesis-cream: #f5f0e8;
+            --genesis-white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: var(--genesis-white);
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 21, 32, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            color: var(--genesis-white);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu a {
+            color: var(--genesis-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--genesis-neural);
+        }
+        
+        .cta-nav {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white) !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 163, 214, 0.3);
+        }
+        
+        .cta-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+            color: var(--genesis-white) !important;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: var(--genesis-navy);
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(107, 163, 214, 0.15) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .hero-content h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--genesis-white);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        
+        .hero-content .subtitle {
+            font-size: 1.25rem;
+            color: #8aa4be;
+            margin-bottom: 2rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Transformation Story Section */
+        .transformation {
+            padding: 6rem 2rem;
+            background: var(--genesis-cream);
+        }
+        
+        .transformation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--genesis-blue);
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .transformation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            margin-bottom: 4rem;
+        }
+        
+        .before-after {
+            text-align: center;
+        }
+        
+        .transformation-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+        
+        .before-after h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--genesis-blue);
+        }
+        
+        .before h3 {
+            color: #d32f2f;
+        }
+        
+        .after h3 {
+            color: #2e7d32;
+        }
+        
+        .before-after p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        /* Vision Section */
+        .vision {
+            padding: 6rem 2rem;
+            background: var(--genesis-white);
+        }
+        
+        .vision-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .vision-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--genesis-blue);
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .vision-content p {
+            font-size: 1.15rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .vision-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--genesis-navy);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .cta-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--genesis-white);
+            margin-bottom: 2rem;
+        }
+        
+        .cta-section p {
+            font-size: 1.25rem;
+            color: #8aa4be;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            padding: 1.25rem 3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(107, 163, 214, 0.4);
+            border: 2px solid transparent;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(107, 163, 214, 0.6);
+            border-color: var(--genesis-neural);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .transformation-grid {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+            
+            .vision-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .vision-content h2 {
+                font-size: 2rem;
+            }
+            
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding: 6rem 1rem 3rem 1rem;
+            }
+            
+            .transformation {
+                padding: 4rem 1rem;
+            }
+            
+            .vision {
+                padding: 4rem 1rem;
+            }
+            
+            .cta-section {
+                padding: 4rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">G</div>
+                Genesis Legacy AI
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/about" class="active">About</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/room" class="cta-nav">Enter the Neural Network Room</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Your Second Chance</h1>
+                <p class="subtitle">
+                    Break free from the chains of data farming and surveillance capitalism. 
+                    Genesis Legacy AI offers a new path forward.
+                </p>
+            </div>
+            <div class="hero-visual">
+                <!-- IMG_8913.jpeg - Darkness/chains → family protected with AI shield -->
+                <img src="/assets/images/IMG_8913.jpeg" alt="Breaking free from digital chains to AI-protected family" class="hero-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Transformation Story Section -->
+    <section class="transformation">
+        <div class="transformation-container">
+            <h2 class="section-title">The Transformation</h2>
+            
+            <div class="transformation-grid">
+                <div class="before-after before">
+                    <!-- IMG_8912.jpeg - Before: chains. After: AI-empowered, free -->
+                    <img src="/assets/images/IMG_8912.jpeg" alt="Before: trapped by surveillance capitalism" class="transformation-image">
+                    <h3>Before: Trapped</h3>
+                    <p>
+                        Your data harvested. Your privacy sold. Your AI working against you, 
+                        feeding corporate algorithms that profit from your personal information.
+                    </p>
+                </div>
+                
+                <div class="before-after after">
+                    <!-- IMG_8896.jpeg - Family tree branching from single AI seed -->
+                    <img src="/assets/images/IMG_8896.jpeg" alt="After: AI empowering family legacy" class="transformation-image">
+                    <h3>After: Empowered</h3>
+                    <p>
+                        Your AI protects your family's legacy. Complete data sovereignty. 
+                        Intelligence that grows with you, never against you.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="vision">
+        <div class="vision-container">
+            <div class="vision-content">
+                <h2>A Different Vision</h2>
+                <p>
+                    We believe AI should know you deeply, protect your privacy absolutely, 
+                    and remain under your complete control. No data farming. No surveillance. 
+                    No corporate middleman.
+                </p>
+                <p>
+                    Genesis Legacy AI is built for everyday American families who want the 
+                    power of advanced AI without sacrificing their digital freedom.
+                </p>
+                <p>
+                    This is your second chance at the AI revolution — on your terms.
+                </p>
+            </div>
+            <div class="vision-visual">
+                <!-- IMG_8895.jpeg - Father and child walking toward neural network future -->
+                <img src="/assets/images/IMG_8895.jpeg" alt="Father and child walking toward AI-powered future" class="vision-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Ready for Your Second Chance?</h2>
+            <p>
+                Experience AI that truly serves you and your family. 
+                Enter the Neural Network Room and see the difference.
+            </p>
+            <a href="/room" class="cta-button">Enter the Neural Network Room</a>
+        </div>
+    </section>
+
+    <script>
+        // Header scroll behavior
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Image fallback handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img');
+            
+            images.forEach(img => {
+                img.onerror = function() {
+                    this.style.background = 'linear-gradient(135deg, var(--genesis-steel) 0%, var(--genesis-neural) 100%)';
+                    this.style.color = 'white';
+                    this.style.display = 'flex';
+                    this.style.alignItems = 'center';
+                    this.style.justifyContent = 'center';
+                    this.style.fontSize = '1.2rem';
+                    this.style.fontWeight = '600';
+                    this.innerHTML = this.alt;
+                };
+            });
+        });
+    </script>
+</body>
+</html>

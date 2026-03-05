@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis Legacy AI Blog - Coming Soon</title>
+    <meta name="description" content="Insights on privacy-first AI, family data sovereignty, and the future of personal intelligence. Coming soon.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Genesis Brand Colors */
+            --genesis-navy: #0d1520;
+            --genesis-blue: #1a2744;
+            --genesis-steel: #4a6d8c;
+            --genesis-neural: #6ba3d6;
+            --genesis-cream: #f5f0e8;
+            --genesis-white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: var(--genesis-white);
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 21, 32, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            color: var(--genesis-white);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu a {
+            color: var(--genesis-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--genesis-neural);
+        }
+        
+        .cta-nav {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white) !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 163, 214, 0.3);
+        }
+        
+        .cta-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+            color: var(--genesis-white) !important;
+        }
+        
+        /* Coming Soon Section */
+        .coming-soon {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem;
+            background: linear-gradient(135deg, var(--genesis-navy) 0%, var(--genesis-blue) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .coming-soon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(107, 163, 214, 0.1) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .coming-soon-container {
+            max-width: 800px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .coming-soon h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--genesis-white);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        
+        .coming-soon .subtitle {
+            font-size: 1.25rem;
+            color: #8aa4be;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+        
+        .topics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .topic {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .topic h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--genesis-white);
+            margin-bottom: 1rem;
+        }
+        
+        .topic p {
+            color: #8aa4be;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .email-signup {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 3rem;
+        }
+        
+        .email-signup h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--genesis-white);
+            margin-bottom: 1rem;
+        }
+        
+        .email-signup p {
+            color: #8aa4be;
+            margin-bottom: 2rem;
+        }
+        
+        .email-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .email-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--genesis-white);
+            font-size: 1rem;
+        }
+        
+        .email-input::placeholder {
+            color: #8aa4be;
+        }
+        
+        .email-submit {
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .email-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 163, 214, 0.4);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
+            color: var(--genesis-white);
+            padding: 1.25rem 3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(107, 163, 214, 0.4);
+            border: 2px solid transparent;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(107, 163, 214, 0.6);
+            border-color: var(--genesis-neural);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .coming-soon h1 {
+                font-size: 2.5rem;
+            }
+            
+            .topics {
+                grid-template-columns: 1fr;
+            }
+            
+            .email-form {
+                flex-direction: column;
+                max-width: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .coming-soon {
+                padding: 6rem 1rem;
+            }
+            
+            .coming-soon h1 {
+                font-size: 2rem;
+            }
+            
+            .email-signup {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">G</div>
+                Genesis Legacy AI
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog" class="active">Blog</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/room" class="cta-nav">Enter the Neural Network Room</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Coming Soon Section -->
+    <section class="coming-soon">
+        <div class="coming-soon-container">
+            <h1>Coming Soon</h1>
+            <p class="subtitle">
+                Insights on privacy-first AI, family data sovereignty, and the future of personal intelligence.
+            </p>
+            
+            <div class="topics">
+                <div class="topic">
+                    <h3>Privacy First</h3>
+                    <p>How to keep your data yours while benefiting from advanced AI capabilities.</p>
+                </div>
+                
+                <div class="topic">
+                    <h3>Family Legacy</h3>
+                    <p>Using AI to preserve and protect what matters most across generations.</p>
+                </div>
+                
+                <div class="topic">
+                    <h3>AI That Serves</h3>
+                    <p>Building AI systems that work for you, not against you or your interests.</p>
+                </div>
+            </div>
+            
+            <div class="email-signup">
+                <h2>Get Notified</h2>
+                <p>Be the first to read our insights on privacy-first AI and family data sovereignty.</p>
+                <form class="email-form" onsubmit="handleEmailSignup(event)">
+                    <input type="email" class="email-input" placeholder="Enter your email" required>
+                    <button type="submit" class="email-submit">Notify Me</button>
+                </form>
+            </div>
+            
+            <a href="/room" class="cta-button">Experience Genesis AI Now</a>
+        </div>
+    </section>
+
+    <script>
+        // Header scroll behavior
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Email signup handler
+        function handleEmailSignup(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('.email-input').value;
+            
+            // Simple validation
+            if (email) {
+                alert('Thank you! We\'ll notify you when the Genesis Legacy AI blog launches.');
+                event.target.reset();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -159,6 +159,7 @@
             margin-bottom: 3rem;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
             background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
             display: flex;
             align-items: center;
@@ -166,20 +167,6 @@
             color: white;
             font-weight: 600;
             font-size: 1.5rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-            opacity: 0.3;
         }
         
         .hero h1 {
@@ -251,43 +238,13 @@
             margin-bottom: 2rem;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 1.2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--genesis-neural) 0%, var(--genesis-steel) 100%);
         }
         
         .story-image:hover {
             transform: translateY(-8px);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-        }
-        
-        .story-image.everyday {
-            background: linear-gradient(135deg, #4a90e2 0%, #6ba3d6 100%);
-        }
-        
-        .story-image.family {
-            background: linear-gradient(135deg, #6ba3d6 0%, #4a6d8c 100%);
-        }
-        
-        .story-image.business {
-            background: linear-gradient(135deg, #4a6d8c 0%, #1a2744 100%);
-        }
-        
-        .story-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='20' cy='20' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-            opacity: 0.3;
         }
         
         .story-label {
@@ -296,6 +253,17 @@
             font-weight: 500;
             color: var(--genesis-blue);
             letter-spacing: 0.5px;
+        }
+        
+        /* Image fallback styling */
+        .story-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            text-align: center;
         }
         
         /* Responsive Design */
@@ -397,9 +365,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <div class="hero-image">
-                🧠 AI Neural Network<br/>Protecting Your Family
-            </div>
+            <!-- Using actual image with fallback styling -->
+            <img src="/assets/images/IMG_9087.jpeg" alt="AI neural network protecting family" class="hero-image" onerror="this.style.display='flex'; this.innerHTML='🧠 AI Neural Network<br/>Protecting Your Family';">
             
             <h1>The AI That Knows You</h1>
             
@@ -421,23 +388,17 @@
     <section class="three-images">
         <div class="three-images-container">
             <div class="image-column">
-                <div class="story-image everyday">
-                    🏠 Kitchen Table<br/>AI Managing Life
-                </div>
+                <img src="/assets/images/IMG_8905.jpeg" alt="AI managing everyday American life" class="story-image" onerror="this.innerHTML='🏠 Kitchen Table<br/>AI Managing Life';">
                 <h2 class="story-label">Everyday Life</h2>
             </div>
             
             <div class="image-column">
-                <div class="story-image family">
-                    👨‍👩‍👧‍👦 Multi-Generation<br/>Family + AI Tablet
-                </div>
+                <img src="/assets/images/IMG_8908.jpeg" alt="Multi-generational family using AI" class="story-image" onerror="this.innerHTML='👨‍👩‍👧‍👦 Multi-Generation<br/>Family + AI Tablet';">
                 <h2 class="story-label">Your Family</h2>
             </div>
             
             <div class="image-column">
-                <div class="story-image business">
-                    🏢 Business Team<br/>Genesis Shield Hologram
-                </div>
+                <img src="/assets/images/IMG_8898.jpeg" alt="Business team with Genesis AI" class="story-image" onerror="this.innerHTML='🏢 Business Team<br/>Genesis Shield Hologram';">
                 <h2 class="story-label">Your Business</h2>
             </div>
         </div>
