@@ -15,12 +15,21 @@ class GenesisVoiceSystem {
     this.bridgeUrl = this.detectBridgeUrl();
     this.speechQueue = [];
     this.currentUtterance = null;
+    
+    // Conversation modes
+    this.conversationMode = 'DIRECT'; // DIRECT, MEETING, BRIEFING
+    this.silenceTimer = null;
+    this.speechEndBuffer = 2000; // 2 second silence before processing
+    this.isBuffering = false;
+    this.bufferedTranscript = '';
 
     console.log(`🎤 Genesis Voice System initializing...`);
     console.log(`🌉 Bridge URL: ${this.bridgeUrl}`);
+    console.log(`🗣️ Mode: ${this.conversationMode}`);
 
     this.setupSpeechRecognition();
     this.checkBridgeConnection();
+    this.createModeSelector();
   }
 
   // Auto-detect bridge server location
@@ -57,16 +66,33 @@ class GenesisVoiceSystem {
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.recognition = new SpeechRecognition();
-    this.recognition.continuous = false; // Single utterance - prevents looping
-    this.recognition.interimResults = false; // Only final results
+    this.recognition.continuous = true; // Continuous listening with silence buffer
+    this.recognition.interimResults = true; // Need interim results for silence detection
     this.recognition.lang = 'en-US';
     this.recognition.maxAlternatives = 1;
 
     this.recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.trim();
-      if (transcript && transcript.length > 0) {
-        console.log(`🎤 Heard: "${transcript}"`);
-        this.handleUserSpeech(transcript);
+      let finalTranscript = '';
+      let interimTranscript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      // Handle speech with 2000ms silence buffer
+      if (finalTranscript.trim()) {
+        this.bufferedTranscript = finalTranscript.trim();
+        this.startSilenceBuffer();
+        console.log(`🎤 Speech buffered: "${this.bufferedTranscript}"`);
+      } else if (interimTranscript.trim()) {
+        // Reset silence buffer on active speech
+        this.clearSilenceBuffer();
+        this.showStatusMessage(`🎤 Listening: "${interimTranscript}..."`, 'info');
       }
     };
 
@@ -75,18 +101,31 @@ class GenesisVoiceSystem {
       if (error.error !== 'no-speech') {
         this.showStatusMessage(`⚠️ Mic error: ${error.error}`, 'warning');
       }
-      this.isListening = false;
-      this.updateAgentUI();
+      this.clearSilenceBuffer();
     };
 
     this.recognition.onend = () => {
       this.isListening = false;
-      // Don't auto-restart - wait for agent to finish responding
+      this.clearSilenceBuffer();
+      // Auto-restart based on conversation mode
+      if (this.conversationMode === 'DIRECT' && !this.isSpeaking) {
+        setTimeout(() => {
+          if (this.currentAgent && !this.isSpeaking) {
+            this.startListening(this.currentAgent);
+          }
+        }, 500);
+      }
       this.updateAgentUI();
     };
 
     this.recognition.onspeechstart = () => {
+      this.clearSilenceBuffer();
       this.showStatusMessage(`🎤 Listening...`, 'info');
+    };
+
+    this.recognition.onspeechend = () => {
+      // Speech ended, start silence buffer
+      this.startSilenceBuffer();
     };
   }
 
@@ -138,8 +177,61 @@ class GenesisVoiceSystem {
     this.updateAgentUI();
   }
 
+  // Silence buffer management
+  startSilenceBuffer() {
+    this.clearSilenceBuffer();
+    this.isBuffering = true;
+    this.silenceTimer = setTimeout(() => {
+      if (this.bufferedTranscript && this.isBuffering) {
+        console.log(`🔄 Processing after ${this.speechEndBuffer}ms silence: "${this.bufferedTranscript}"`);
+        this.handleUserSpeech(this.bufferedTranscript);
+        this.bufferedTranscript = '';
+        this.isBuffering = false;
+      }
+    }, this.speechEndBuffer);
+  }
+
+  clearSilenceBuffer() {
+    if (this.silenceTimer) {
+      clearTimeout(this.silenceTimer);
+      this.silenceTimer = null;
+    }
+    this.isBuffering = false;
+  }
+
   async handleUserSpeech(transcript) {
     if (!this.currentAgent) return;
+
+    // Handle different conversation modes
+    switch (this.conversationMode) {
+      case 'MEETING':
+        const detectedAgent = this.detectAgentInSpeech(transcript);
+        if (!detectedAgent) {
+          this.showStatusMessage('📢 Say agent name first (e.g. "JARVIS, what\'s the status?")', 'warning');
+          return;
+        }
+        this.currentAgent = detectedAgent;
+        // Remove agent name from transcript
+        transcript = transcript.replace(new RegExp(`^${detectedAgent}[,:]?\\s*`, 'i'), '').trim();
+        break;
+        
+      case 'BRIEFING':
+        // In briefing mode, only process if not currently speaking
+        if (this.isSpeaking) {
+          console.log('🎙️ Agent is briefing, ignoring user speech');
+          return;
+        }
+        break;
+        
+      case 'DIRECT':
+      default:
+        // Stop agent if user interrupts
+        if (this.isSpeaking) {
+          console.log('🛑 User interrupted agent speech');
+          this.stopSpeaking();
+        }
+        break;
+    }
 
     this.showStatusMessage(`💭 ${this.currentAgent} thinking...`, 'info');
     this.setAgentWorking(this.currentAgent, true);
@@ -154,6 +246,15 @@ class GenesisVoiceSystem {
     } finally {
       this.setAgentWorking(this.currentAgent, false);
     }
+  }
+
+  // Detect agent name at start of speech for MEETING mode
+  detectAgentInSpeech(transcript) {
+    const agentNames = ['JARVIS', 'ATLAS', 'DEMI', 'SEAN', 'VIC', 'SCOUT'];
+    const words = transcript.trim().split(' ');
+    const firstWord = words[0]?.toUpperCase();
+    
+    return agentNames.find(name => name === firstWord) || null;
   }
 
   async queryAgent(agentName, message) {
@@ -206,12 +307,27 @@ class GenesisVoiceSystem {
         this.currentUtterance = null;
         this.showStatusMessage(`✅ ${agentName} ready`, 'success');
         this.updateAgentUI();
-        // Re-enable listening after agent finishes speaking
-        setTimeout(() => {
-          if (this.currentAgent === agentName) {
-            this.startListening(agentName);
-          }
-        }, 500);
+        
+        // Re-enable listening based on conversation mode
+        if (this.conversationMode === 'DIRECT') {
+          // Auto reopen mic after agent finishes
+          setTimeout(() => {
+            if (this.currentAgent === agentName) {
+              this.startListening(agentName);
+            }
+          }, 500);
+        } else if (this.conversationMode === 'BRIEFING') {
+          // Manual button press required - don't auto reopen
+          this.showStatusMessage(`🎤 Press agent to respond`, 'info');
+        } else if (this.conversationMode === 'MEETING') {
+          // Reopen for next agent command
+          setTimeout(() => {
+            if (this.currentAgent === agentName) {
+              this.startListening(agentName);
+            }
+          }, 500);
+        }
+        
         resolve();
       };
 
@@ -309,6 +425,105 @@ class GenesisVoiceSystem {
       statusEl.className = `voice-status ${type}`;
     }
     console.log(`[Voice] ${message}`);
+  }
+
+  // Create conversation mode selector UI
+  createModeSelector() {
+    const selectorHTML = `
+      <div id="voice-mode-selector" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(51, 65, 85, 0.9));
+        border: 2px solid rgba(16, 185, 129, 0.6);
+        border-radius: 12px;
+        padding: 12px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        z-index: 3000;
+        color: white;
+        font-family: 'Orbitron', monospace;
+        font-size: 12px;
+        min-width: 140px;
+      ">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #10b981;">
+          🎙️ Voice Mode
+        </div>
+        <select id="conversation-mode" style="
+          background: rgba(30, 41, 59, 0.8);
+          border: 1px solid rgba(16, 185, 129, 0.5);
+          border-radius: 6px;
+          color: white;
+          padding: 6px 8px;
+          width: 100%;
+          font-size: 11px;
+          font-family: inherit;
+        ">
+          <option value="DIRECT">DIRECT (1-on-1)</option>
+          <option value="MEETING">MEETING (Multi-agent)</option>
+          <option value="BRIEFING">BRIEFING (Uninterrupted)</option>
+        </select>
+        <div id="mode-description" style="
+          font-size: 9px;
+          opacity: 0.7;
+          margin-top: 6px;
+          line-height: 1.3;
+        ">
+          2s silence buffer, auto mic reopen
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', selectorHTML);
+
+    const modeSelect = document.getElementById('conversation-mode');
+    const modeDescription = document.getElementById('mode-description');
+
+    const modeDescriptions = {
+      'DIRECT': '2s silence buffer, auto mic reopen',
+      'MEETING': 'Say agent name first, multi-agent',
+      'BRIEFING': 'Agent speaks uninterrupted'
+    };
+
+    modeSelect.value = this.conversationMode;
+    modeDescription.textContent = modeDescriptions[this.conversationMode];
+
+    modeSelect.addEventListener('change', (e) => {
+      this.conversationMode = e.target.value;
+      modeDescription.textContent = modeDescriptions[this.conversationMode];
+      console.log(`🎙️ Voice mode changed to: ${this.conversationMode}`);
+      
+      // Update status message
+      this.showStatusMessage(`🎙️ Mode: ${this.conversationMode}`, 'info');
+      
+      // If currently listening, restart with new mode behavior
+      if (this.isListening && this.currentAgent) {
+        this.stopListening();
+        setTimeout(() => {
+          this.startListening(this.currentAgent);
+        }, 200);
+      }
+    });
+  }
+
+  // Set conversation mode programmatically
+  setConversationMode(mode) {
+    const validModes = ['DIRECT', 'MEETING', 'BRIEFING'];
+    if (validModes.includes(mode)) {
+      this.conversationMode = mode;
+      const selector = document.getElementById('conversation-mode');
+      if (selector) {
+        selector.value = mode;
+        const descriptions = {
+          'DIRECT': '2s silence buffer, auto mic reopen',
+          'MEETING': 'Say agent name first, multi-agent', 
+          'BRIEFING': 'Agent speaks uninterrupted'
+        };
+        const descEl = document.getElementById('mode-description');
+        if (descEl) descEl.textContent = descriptions[mode];
+      }
+      console.log(`🎙️ Voice mode set to: ${mode}`);
+    }
   }
 }
 
