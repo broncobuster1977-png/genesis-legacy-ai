@@ -135,10 +135,10 @@ class GenesisVoiceSystem {
                 // Show voice controls
                 this.showVoiceInterface(agentName);
                 
-                // Show agent response after a moment
+                // Start simple speech recognition for two-way communication
                 setTimeout(() => {
-                    console.log(`🤖 Showing ${agentName} response`);
-                    this.simulateAgentResponse(agentName);
+                    console.log(`🎤 Starting speech recognition for ${agentName}`);
+                    this.enableSpeechRecognition(agentName);
                 }, 1500);
                 
                 console.log(`=== CONNECTION SUCCESS ===`);
@@ -291,6 +291,11 @@ class GenesisVoiceSystem {
     async disconnect() {
         console.log('🔌 Disconnecting from voice session...');
         
+        // Stop speech recognition if active
+        if (window.simpleSpeech && window.simpleSpeech.isListening) {
+            window.simpleSpeech.stopListening();
+        }
+        
         if (this.currentAgent) {
             this.updateAgentStatus(this.currentAgent, 'active');
         }
@@ -302,6 +307,61 @@ class GenesisVoiceSystem {
         this.clearStatusMessages();
         
         console.log('✅ Voice session ended');
+    }
+    
+    // Enable speech recognition for two-way communication
+    async enableSpeechRecognition(agentName) {
+        console.log(`🎤 Enabling speech recognition for ${agentName}...`);
+        
+        // Check if simple speech system is available
+        if (!window.simpleSpeech) {
+            console.error('❌ Simple speech system not available');
+            this.showStatusMessage('❌ Speech recognition system not loaded', 'error');
+            return;
+        }
+        
+        // Start listening for Tyler's voice
+        const listeningStarted = window.simpleSpeech.startListening(agentName);
+        
+        if (listeningStarted) {
+            console.log(`✅ Speech recognition active for ${agentName}`);
+            
+            // Show initial agent greeting with promise of voice response
+            const greeting = this.getAgentVoiceGreeting(agentName);
+            this.showAgentMessage(agentName, greeting);
+            
+            // Speak the greeting using simple speech system
+            if (window.simpleSpeech) {
+                window.simpleSpeech.speakResponse(agentName, greeting);
+            }
+            
+            // Update status
+            this.showStatusMessage(`✅ ${agentName} is listening and will respond with voice!`, 'success');
+            
+        } else {
+            console.log(`❌ Failed to start speech recognition for ${agentName}`);
+            this.showStatusMessage(`❌ Speech recognition not available on this device`, 'warning');
+            
+            // Fall back to demo mode
+            setTimeout(() => {
+                this.simulateAgentResponse(agentName);
+            }, 1000);
+        }
+    }
+    
+    // Get voice-enabled greeting for agent
+    getAgentVoiceGreeting(agentName) {
+        const greetings = {
+            'ATLAS': 'Technical infrastructure operational, Tyler. Voice communication system active. I can hear you speaking and will respond with voice to everything you say. Try saying hello or asking about system status.',
+            'JARVIS': 'Strategic command online, Tyler. Voice command protocols engaged. I am listening for your directives and will respond with voice to all communications. Fleet coordination ready.',
+            'DEMI': 'Design matrix active, Tyler. Creative voice interface initialized. I can hear your creative input and will respond with voice to support your vision. Ready for collaboration.',
+            'VIC': 'Financial systems synchronized, Tyler. Voice consultation protocols active. I am listening for your questions and will provide voice responses on tax, entity, and financial matters.',
+            'SCOUT': 'Intelligence networks engaged, Tyler. Voice briefing system ready. I can hear your research requests and will respond with voice analysis and data. Ready for intel gathering.',
+            'SEAN': 'Legal framework activated, Tyler. Voice consultation system online. I am listening for your legal questions and will provide voice responses on contracts and compliance matters.',
+            'PHOENIX': 'System monitoring active, Tyler. Voice alert system engaged. I can hear your status requests and will respond with voice updates on all agent health and system status.'
+        };
+        
+        return greetings[agentName] || `${agentName} voice communication system activated, Tyler. I can hear you speaking and will respond with voice to everything you say. Try speaking to test the system.`;
     }
     
     updateAgentStatus(agentName, status) {
