@@ -1,284 +1,286 @@
 #!/usr/bin/env node
 /**
  * Genesis Legacy AI - Voice Bridge Server
- * Connects web voice system to real OpenClaw agents
- * Atlas Technical Director - March 4, 2026
+ * Connects genesislegacyai.com voice UI to real OpenClaw agent sessions
  * 
- * Based on Elvis architecture - real agent bridge implementation
+ * Architecture:
+ * Browser Web Speech API → POST /api/agent/speak → OpenClaw CLI → Agent response → JSON back to browser
+ * Browser then speaks response via ElevenLabs TTS (or browser TTS fallback)
+ * 
+ * Deploy on MSI: node voice-bridge-server.js
+ * Port: 3001 (separate from Vercel static site on 3000)
  */
 
-const express = require('express');
-const cors = require('cors');
-const { spawn } = require('child_process');
-const fs = require('fs').promises;
-const path = require('path');
+const http = require('http');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+const execAsync = promisify(exec);
 
-const app = express();
 const PORT = 3001;
+const OPENCLAW_PATH = '/home/bronc/.openclaw';
 
-// Enable CORS for Vercel deployment
-app.use(cors({
-  origin: [
-    'https://genesislegacyai.com',
-    'https://genesis-deployment.vercel.app', 
-    'http://localhost:3000',
-    'http://localhost:8080'
-  ],
-  credentials: true
-}));
+// Agent configuration - maps website agent names to OpenClaw session names
+const AGENT_CONFIG = {
+  'JARVIS': {
+    session: 'agent:main:main',
+    openclaw_agent: 'jarvis',
+    personality: 'Strategic Command',
+    voice_description: 'commanding, authoritative, precise',
+    // ElevenLabs voice ID - Atlas to fill in after setup
+    elevenlabs_voice_id: process.env.ELEVENLABS_JARVIS_VOICE || null,
+    color: '#00d4ff'
+  },
+  'ATLAS': {
+    session: 'agent:atlas:main', 
+    openclaw_agent: 'atlas',
+    personality: 'Technical Director',
+    voice_description: 'precise, technical, confident',
+    elevenlabs_voice_id: process.env.ELEVENLABS_ATLAS_VOICE || null,
+    color: '#00ff88'
+  },
+  'DEMI': {
+    session: 'agent:demi-voss:main',
+    openclaw_agent: 'demi-voss', 
+    personality: 'Creative Director',
+    voice_description: 'energetic, creative, enthusiastic',
+    elevenlabs_voice_id: process.env.ELEVENLABS_DEMI_VOICE || null,
+    color: '#ff6b9d'
+  },
+  'SEAN': {
+    session: 'agent:sean-archer:main',
+    openclaw_agent: 'sean-archer',
+    personality: 'Legal Counsel',
+    voice_description: 'measured, professional, deliberate',
+    elevenlabs_voice_id: process.env.ELEVENLABS_SEAN_VOICE || null,
+    color: '#ffd700'
+  },
+  'VIC': {
+    session: 'agent:vic:main',
+    openclaw_agent: 'vic',
+    personality: 'Tax & Entity Expert',
+    voice_description: 'analytical, confident, thorough',
+    elevenlabs_voice_id: process.env.ELEVENLABS_VIC_VOICE || null,
+    color: '#ff8c00'
+  },
+  'SCOUT': {
+    session: 'agent:scout:main',
+    openclaw_agent: 'scout',
+    personality: 'Intelligence Agent',
+    voice_description: 'sharp, quick, direct',
+    elevenlabs_voice_id: process.env.ELEVENLABS_SCOUT_VOICE || null,
+    color: '#9b59b6'
+  }
+};
 
-app.use(express.json({ limit: '1mb' }));
-
-// Store active agent sessions
-const agentSessions = new Map();
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    bridge: 'Genesis Voice Bridge v1.0',
-    timestamp: new Date().toISOString(),
-    activeSessions: agentSessions.size,
-    uptime: process.uptime()
-  });
-});
-
-// Main voice-to-agent endpoint
-app.post('/api/agent/speak', async (req, res) => {
-  const { agent, message } = req.body;
-  
-  console.log(`🎤 Voice request: ${agent} <- "${message}"`);
-  
-  if (!agent || !message) {
-    return res.status(400).json({ error: 'Missing agent or message' });
+// Send message to real OpenClaw agent and get response
+async function queryAgent(agentName, userMessage) {
+  const agent = AGENT_CONFIG[agentName.toUpperCase()];
+  if (!agent) {
+    throw new Error(`Unknown agent: ${agentName}`);
   }
 
+  console.log(`[${new Date().toISOString()}] Routing to ${agentName}: "${userMessage}"`);
+
+  // Write message to agent inbox for processing
+  const timestamp = Date.now();
+  const inboxFile = `${OPENCLAW_PATH}/workspace/agents/${agent.openclaw_agent}/inbox/voice-${timestamp}.md`;
+  const messageContent = `# Voice Query - ${new Date().toISOString()}\n\nFrom: Tyler (Voice Interface)\nTo: ${agentName}\n\n${userMessage}\n\nRespond briefly (2-3 sentences max for voice). Be direct.`;
+
+  // Write to inbox
+  await execAsync(`echo '${messageContent.replace(/'/g, "'\\''")}' > "${inboxFile}"`);
+
+  // Use OpenClaw CLI to query the agent directly
+  // This sends the message to the agent's active session
+  const clawCommand = `cd ${OPENCLAW_PATH} && echo '${userMessage.replace(/'/g, "'\\''")}' | timeout 30 openclaw --agent ${agent.openclaw_agent} --no-interactive 2>/dev/null | tail -20`;
+  
   try {
-    // Get or create agent session
-    let sessionKey = agentSessions.get(agent);
-    if (!sessionKey) {
-      sessionKey = await createAgentSession(agent);
-      if (sessionKey) {
-        agentSessions.set(agent, sessionKey);
-        console.log(`📱 Created session for ${agent}: ${sessionKey}`);
+    const { stdout, stderr } = await execAsync(clawCommand, { timeout: 35000 });
+    
+    if (stdout && stdout.trim().length > 0) {
+      // Clean up the response - remove ANSI codes, prompts, etc.
+      const cleanResponse = stdout
+        .replace(/\x1b\[[0-9;]*m/g, '') // Remove ANSI color codes
+        .replace(/^[>\$#]\s*/gm, '')     // Remove prompt characters
+        .replace(/^\s*\n/gm, '')          // Remove empty lines
+        .trim();
+      
+      if (cleanResponse.length > 0) {
+        return cleanResponse;
       }
     }
-
-    // Send message to real OpenClaw agent
-    const response = await sendToOpenClawAgent(agent, sessionKey, message);
-    
-    console.log(`🤖 ${agent} response: "${response.substring(0, 100)}..."`);
-    
-    res.json({ 
-      success: true,
-      agent,
-      response,
-      sessionKey: sessionKey || 'fallback'
-    });
-
-  } catch (error) {
-    console.error(`❌ Agent ${agent} error:`, error.message);
-    
-    // Return fallback response
-    const fallbackResponse = generateFallbackResponse(agent, message);
-    res.json({
-      success: true,
-      agent,
-      response: fallbackResponse,
-      fallback: true
-    });
+  } catch (err) {
+    console.log(`CLI query failed, falling back to session file: ${err.message}`);
   }
-});
 
-// Create OpenClaw agent session
-async function createAgentSession(agentName) {
+  // Fallback: Check agent outbox for recent responses
   try {
-    // Use OpenClaw CLI to spawn agent session
-    const agentId = agentName.toLowerCase();
-    const task = `Voice conversation session for ${agentName}. Ready for voice communication with Tyler.`;
+    const outboxCheck = await execAsync(
+      `ls -t ${OPENCLAW_PATH}/workspace/agents/${agent.openclaw_agent}/outbox/ 2>/dev/null | head -1`
+    );
     
-    const cmd = 'openclaw';
-    const args = [
-      'sessions', 'spawn',
-      '--agent-id', agentId,
-      '--mode', 'session', 
-      '--task', task,
-      '--cleanup', 'keep',
-      '--json'
-    ];
-
-    console.log(`📞 Spawning ${agentName} session: ${cmd} ${args.join(' ')}`);
-
-    return new Promise((resolve) => {
-      const proc = spawn(cmd, args, {
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: process.env
-      });
-
-      let stdout = '';
-      let stderr = '';
-
-      proc.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
-
-      proc.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-
-      proc.on('close', (code) => {
-        if (code === 0 && stdout.trim()) {
-          try {
-            const result = JSON.parse(stdout.trim());
-            resolve(result.sessionKey || result.session_key);
-          } catch (e) {
-            console.log(`⚠️ JSON parse failed, extracting session key from: ${stdout}`);
-            // Try to extract session key from text output
-            const match = stdout.match(/session[_\s]*key[:\s]+([a-zA-Z0-9\-_]+)/i);
-            resolve(match ? match[1] : null);
-          }
-        } else {
-          console.log(`⚠️ Session spawn failed (code ${code}): ${stderr}`);
-          resolve(null);
-        }
-      });
-
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        proc.kill();
-        resolve(null);
-      }, 10000);
-    });
-
-  } catch (error) {
-    console.error(`❌ Failed to create session for ${agentName}:`, error);
-    return null;
+    if (outboxCheck.stdout.trim()) {
+      const latestFile = outboxCheck.stdout.trim();
+      const { stdout: fileContent } = await execAsync(
+        `cat "${OPENCLAW_PATH}/workspace/agents/${agent.openclaw_agent}/outbox/${latestFile}" 2>/dev/null | tail -10`
+      );
+      if (fileContent.trim()) {
+        return fileContent.trim();
+      }
+    }
+  } catch (err) {
+    console.log(`Outbox check failed: ${err.message}`);
   }
+
+  // Last fallback: Agent is not in an active session, return routing message
+  return `${agentName} here. I received your message but my session needs to be opened in OpenClaw to respond in real time. Ask JARVIS to activate me.`;
 }
 
-// Send message to real OpenClaw agent
-async function sendToOpenClawAgent(agentName, sessionKey, message) {
-  if (!sessionKey) {
-    throw new Error('No session key available');
+// Optional: ElevenLabs TTS
+async function textToSpeech(text, voiceId) {
+  if (!process.env.ELEVENLABS_API_KEY || !voiceId) {
+    return null; // Browser will use built-in TTS
   }
 
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+  
+  // Use curl for the ElevenLabs API call
+  const curlCmd = `curl -s -X POST "${url}" \
+    -H "xi-api-key: ${apiKey}" \
+    -H "Content-Type: application/json" \
+    -d '{"text":"${text.replace(/'/g, "'\\''")}","model_id":"eleven_monolingual_v1","voice_settings":{"stability":0.5,"similarity_boost":0.75}}' \
+    --output /tmp/voice-${Date.now()}.mp3 && echo "success"`;
+  
   try {
-    const cmd = 'openclaw';
-    const args = [
-      'sessions', 'send',
-      '--session-key', sessionKey,
-      '--message', message,
-      '--timeout', '25',
-      '--json'
-    ];
+    const { stdout } = await execAsync(curlCmd, { timeout: 10000 });
+    if (stdout.includes('success')) {
+      return true;
+    }
+  } catch (err) {
+    console.log(`ElevenLabs TTS failed: ${err.message}`);
+  }
+  return null;
+}
 
-    console.log(`📤 Sending to ${agentName}: ${message.substring(0, 50)}...`);
+// CORS headers
+function setCORSHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
-    return new Promise((resolve, reject) => {
-      const proc = spawn(cmd, args, {
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: process.env
-      });
-
-      let stdout = '';
-      let stderr = '';
-
-      proc.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
-
-      proc.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-
-      proc.on('close', (code) => {
-        if (code === 0 && stdout.trim()) {
-          try {
-            const result = JSON.parse(stdout.trim());
-            const response = result.response || result.message || stdout.trim();
-            resolve(cleanAgentResponse(response));
-          } catch (e) {
-            // If JSON parsing fails, use raw stdout
-            resolve(cleanAgentResponse(stdout.trim()));
-          }
-        } else {
-          reject(new Error(`Agent communication failed (code ${code}): ${stderr}`));
-        }
-      });
-
-      // Timeout after 30 seconds
-      setTimeout(() => {
-        proc.kill();
-        reject(new Error('Agent response timeout'));
-      }, 30000);
+// Parse request body
+function parseBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch (e) {
+        resolve({});
+      }
     });
+    req.on('error', reject);
+  });
+}
 
-  } catch (error) {
-    console.error(`❌ Failed to send to ${agentName}:`, error);
-    throw error;
+// Main server
+const server = http.createServer(async (req, res) => {
+  setCORSHeaders(res);
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
   }
-}
 
-// Clean agent response for voice output
-function cleanAgentResponse(response) {
-  if (!response || typeof response !== 'string') {
-    return 'I apologize, but I did not receive a clear response. Please try again.';
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+
+  // Health check
+  if (url.pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ 
+      status: 'online', 
+      agents: Object.keys(AGENT_CONFIG),
+      timestamp: new Date().toISOString()
+    }));
+    return;
   }
 
-  // Remove excessive technical formatting that doesn't work well in voice
-  return response
-    .replace(/```[\s\S]*?```/g, '') // Remove code blocks
-    .replace(/#{1,6}\s+/g, '')      // Remove markdown headers
-    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
-    .replace(/\*(.*?)\*/g, '$1')    // Remove italic markdown
-    .replace(/`([^`]+)`/g, '$1')    // Remove inline code
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links, keep text
-    .replace(/^\s*[-*+]\s+/gm, '')  // Remove bullet points
-    .replace(/^\s*\d+\.\s+/gm, '')  // Remove numbered lists
-    .replace(/\n{3,}/g, '\n\n')     // Limit consecutive newlines
-    .replace(/\s{2,}/g, ' ')        // Normalize whitespace
-    .trim();
-}
+  // Agent list
+  if (url.pathname === '/api/agents') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      agents: Object.entries(AGENT_CONFIG).map(([name, config]) => ({
+        name,
+        personality: config.personality,
+        voice_description: config.voice_description,
+        has_elevenlabs: !!config.elevenlabs_voice_id,
+        color: config.color
+      }))
+    }));
+    return;
+  }
 
-// Generate fallback responses when agent unavailable
-function generateFallbackResponse(agentName, message) {
-  const responses = {
-    'JARVIS': 'Strategic Command online, Tyler. I heard your directive but I am currently experiencing connection issues with the main coordination systems. Please ensure the bridge server is running properly.',
-    
-    'ATLAS': 'Technical Director here, Tyler. I received your communication but I am unable to connect to the main infrastructure systems right now. Please check the voice bridge server status.',
-    
-    'DEMI': 'Creative Director online, Tyler. I caught your message but the design matrix connection seems to be interrupted. The voice bridge may need to be restarted.',
-    
-    'SEAN': 'Sean Archer here. I heard you but the legal framework systems are not responding properly. There appears to be a bridge connectivity issue.',
-    
-    'VIC': 'Vic reporting. Your message was received but I cannot access the financial analysis systems at the moment. Please verify the bridge server is operational.',
-    
-    'SCOUT': 'Scout Delgado here. Message received but intelligence networks are offline. The voice bridge connection appears to be down.'
-  };
+  // Main voice endpoint - POST /api/agent/speak
+  if (url.pathname === '/api/agent/speak' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const { agent, message } = body;
 
-  return responses[agentName.toUpperCase()] || 
-    `${agentName} received your message: "${message.substring(0, 30)}..." but cannot connect to the main agent systems right now. Please check that the OpenClaw agents are running properly.`;
-}
+      if (!agent || !message) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Missing agent or message' }));
+        return;
+      }
 
-// Cleanup sessions periodically  
-setInterval(() => {
-  console.log(`🧹 Active sessions: ${agentSessions.size}`);
-}, 300000); // 5 minutes
+      // Query the real agent
+      const response = await queryAgent(agent, message);
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🌉 Genesis Voice Bridge running on port ${PORT}`);
-  console.log(`🎤 Ready for voice connections from GenesisLegacyAI.com`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
+      // Try ElevenLabs TTS if configured
+      const agentConfig = AGENT_CONFIG[agent.toUpperCase()];
+      const hasElevenLabs = agentConfig?.elevenlabs_voice_id && process.env.ELEVENLABS_API_KEY;
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        agent,
+        response,
+        use_elevenlabs: hasElevenLabs,
+        voice_id: agentConfig?.elevenlabs_voice_id || null,
+        personality: agentConfig?.personality || 'Agent'
+      }));
+
+    } catch (err) {
+      console.error('Voice bridge error:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // 404
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ error: 'Not found' }));
 });
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down voice bridge server...');
-  process.exit(0);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`
+╔═══════════════════════════════════════════════════╗
+║     Genesis Legacy AI - Voice Bridge Server       ║
+║     Port: ${PORT}                                    ║
+║     Status: ONLINE                                ║
+╚═══════════════════════════════════════════════════╝
+
+Agents configured: ${Object.keys(AGENT_CONFIG).join(', ')}
+OpenClaw path: ${OPENCLAW_PATH}
+ElevenLabs: ${process.env.ELEVENLABS_API_KEY ? 'CONFIGURED' : 'Not configured (using browser TTS)'}
+
+Waiting for voice queries...
+  `);
 });
 
-process.on('SIGTERM', () => {
-  console.log('\n🛑 Voice bridge server terminated');
-  process.exit(0);
+server.on('error', (err) => {
+  console.error('Server error:', err);
 });
